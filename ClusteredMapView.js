@@ -14,7 +14,7 @@ import MapView from 'react-native-maps'
 import SuperCluster from 'supercluster'
 import GeoViewport from '@mapbox/geo-viewport'
 // components / views
-import CustomMarker from './CustomMarker'
+import CustomMarker from './ClusterMarker'
 
 const itemToGeoJSONFeature = (item) => ({
   type: 'Feature',
