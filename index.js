@@ -1,1 +1,2 @@
-export default require('./ClusteredMapView')
+import ClusteredMapView from './ClusteredMapView'
+export default ClusteredMapView
