@@ -1,6 +1,6 @@
 {
   "name": "react-native-maps-super-cluster",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A Clustering-enabled map for React Native",
   "main": "index.js",
   "scripts": {
@@ -32,9 +32,11 @@
   },
   "homepage": "https://github.com/novalabio/react-native-maps-super-cluster#readme",
   "dependencies": {
-    "@mapbox/geo-viewport": "^0.2.2",
-    "prop-types": "^15.6.0",
+    "supercluster": "^3.0.1",
+    "@mapbox/geo-viewport": "^0.2.2"
+  },
+  "peerDependencies": {
     "react-native-maps": "^0.17.1",
-    "supercluster": "^3.0.1"
+    "prop-types": "^15.6.0"
   }
 }
