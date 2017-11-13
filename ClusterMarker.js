@@ -4,9 +4,7 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { Marker } from 'react-native-maps'
-import { Text, View, StyleSheet } from  'react-native'
-// constants
-import { COLORS } from '../../constants'
+import { Text, View, StyleSheet } from 'react-native'
 
 export default class ClusterMarker extends Component {
   constructor(props) {
@@ -76,13 +74,13 @@ const styles = StyleSheet.create({
   container: {
     borderWidth: 1,
     alignItems: 'center',
+    borderColor: '#65bc46',
     justifyContent: 'center',
-    backgroundColor: COLORS.white,
-    borderColor: COLORS.brandFirst,
+    backgroundColor: '#fff'
   },
   counterText: {
     fontSize: 16,
-    fontWeight: '400',
-    color: COLORS.brandFirst,
+    color: '#65bc46',
+    fontWeight: '400'
   }
 })
