@@ -128,7 +128,9 @@ export default class ClusteredMapView extends Component {
                 {...d}
                 key={`cluster-marker${i}`}
                 onPress={this.onClusterPress}
-                renderMarker={this.props.renderMarker} />
+                textStyle={this.props.textStyle}
+                renderMarker={this.props.renderMarker}
+                containerStyle={this.props.containerStyle} />
             )
           })
         }
@@ -159,5 +161,8 @@ ClusteredMapView.propTypes = {
   // bool
   animateClusters: PropTypes.bool.isRequired,
   clusteringEnabled: PropTypes.bool.isRequired,
+  // object
+  textStyle: PropTypes.object.isRequired,
+  containerStyle: PropTypes.object.isRequired
   // string
 }

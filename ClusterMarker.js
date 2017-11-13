@@ -36,7 +36,7 @@ export default class ClusterMarker extends Component {
 
     if (pointCount >= 2 && pointCount <= 10) {
       textForCluster = pointCount.toString()
-    } if (pointCount >10 && pointCount <= 25) {
+    } if (pointCount > 10 && pointCount <= 25) {
       textForCluster = '10+'
     } if (pointCount > 25 && pointCount <= 50) {
       textForCluster = '25+'
