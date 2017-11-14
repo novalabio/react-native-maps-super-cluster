@@ -6,7 +6,7 @@ import React, { Component } from 'react'
 import {
   Platform,
   Dimensions,
-  PixelRatio,
+  // PixelRatio,
   LayoutAnimation
 } from 'react-native'
 // map-related libs
@@ -32,7 +32,7 @@ const getBoundingBox = (region) => ([
   region.latitude + region.latitudeDelta // northLat - max lat
 ])
 
-const isRelevantChange = (prevRegion, region) => region.longitudeDelta <= 80
+// const isZoomLevelChange = (prevRegion, region) => prevRegion.longitudeDelta !== region.longitudeDelta
 
 export default class ClusteredMapView extends Component {
 
@@ -46,6 +46,7 @@ export default class ClusteredMapView extends Component {
 
     this.mapRef = this.mapRef.bind(this)
     this.onClusterPress = this.onClusterPress.bind(this)
+    this.isZoomLevelChanged = this.isZoomLevelChanged.bind(this)
     this.onRegionChangeComplete = this.onRegionChangeComplete.bind(this)
   }
 
@@ -56,17 +57,17 @@ export default class ClusteredMapView extends Component {
     this.height = this.props.height || height
     this.isAndroid = Platform.OS === 'android'
 
-    this.index = SuperCluster({ // eslint-disable-line new-cap
-      extent: 256,
-      maxZoom: this.props.maxZoom,
-      radius: PixelRatio.roundToNearestPixel(this.props.clusterRadius)
-    })
-
     this.setState({ region: this.props.region || this.props.initialRegion })
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.data !== nextProps.data) {
+
+      this.index = SuperCluster({ // eslint-disable-line new-cap
+        maxZoom: this.props.maxZoom,
+        radius: Math.floor(this.width / 22)
+      })
+
       // get formatted GeoPoints for cluster
       const rawData = nextProps.data.map(itemToGeoJSONFeature)
       // load geopoints into SuperCluster
@@ -91,7 +92,7 @@ export default class ClusteredMapView extends Component {
     Object.keys(this.state.data).length !== Object.keys(nextState.data).length
 
   onRegionChangeComplete(region) {
-    if (this.state.data.length > 0 && isRelevantChange(this.state.region, region)) {
+    if ((this.state.data.length > 0) && this.isZoomLevelChanged(this.state.region, region))  {
       const data = this.getClusters(region)
       this.setState({ region, data })
     }
@@ -108,11 +109,21 @@ export default class ClusteredMapView extends Component {
     const center = {
       latitude: cluster.geometry.coordinates[1],
       longitude: cluster.geometry.coordinates[0],
-      latitudeDelta: this.state.region.latitudeDelta / 4,
-      longitudeDelta: this.state.region.longitudeDelta / 4
+      latitudeDelta: this.state.region.latitudeDelta / 3,
+      longitudeDelta: this.state.region.longitudeDelta / 3
     }
 
     this.mapview && this.mapview.animateToRegion(center)
+  }
+
+  // TODO try to simply compare the longitude and latitude delta
+  isZoomLevelChanged = (prevRegion, region) => {
+    const bbox1 = getBoundingBox(prevRegion),
+          viewportPrevRegion = (prevRegion.longitudeDelta) >= 40 ? 0 : GeoViewport.viewport(bbox1, [this.width, this.height]),
+          bbox2 = getBoundingBox(region),
+          viewportRegion = (region.longitudeDelta) >= 40 ? 0 : GeoViewport.viewport(bbox2, [this.width, this.height])
+
+    return viewportRegion.zoom !== viewportPrevRegion.zoom
   }
 
   render() {
@@ -130,7 +141,8 @@ export default class ClusteredMapView extends Component {
                 onPress={this.onClusterPress}
                 textStyle={this.props.textStyle}
                 renderMarker={this.props.renderMarker}
-                containerStyle={this.props.containerStyle} />
+                containerStyle={this.props.containerStyle}
+                clusterInitialDimension={this.props.clusterInitialDimension} />
             )
           })
         }
@@ -140,9 +152,10 @@ export default class ClusteredMapView extends Component {
 }
 ClusteredMapView.defaultProps = {
   maxZoom: 40,
-  clusterRadius: 20,
+  clusterRadius: 26,
   animateClusters: true,
-  clusteringEnabled: true
+  clusteringEnabled: true,
+  clusterInitialDimension: 30
 }
 
 ClusteredMapView.propTypes = {
@@ -150,6 +163,7 @@ ClusteredMapView.propTypes = {
   // number
   width: PropTypes.number,
   height: PropTypes.number,
+  clusterInitialDimension: PropTypes.number,
   clusterRadius: PropTypes.number.isRequired, // ppi
   // array
   data: PropTypes.array.isRequired,

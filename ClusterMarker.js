@@ -18,7 +18,7 @@ export default class ClusterMarker extends Component {
   }
 
   render() {
-    if (this.props.properties.item)
+    if (this.props.properties.point_count === 0)
       return this.props.renderMarker(this.props.properties.item)
 
     const pointCount = this.props.properties.point_count // eslint-disable-line camelcase
@@ -27,10 +27,15 @@ export default class ClusterMarker extends Component {
 
     let textForCluster = '1'
 
-    const width = Math.floor(30 * (1 + pointCount / 10)),
-          height = Math.floor(30 * (1 + pointCount / 10)),
-          fontSize = 12 * (1 + pointCount / 20),
-          borderRadius = Math.floor(width / 2)
+    let width = Math.floor(this.props.clusterInitialDimension * ((1 + pointCount / 10) * 0.60)),
+        height = Math.floor(this.props.clusterInitialDimension * ((1 + pointCount / 10) * 0.60)),
+        fontSize = Math.floor(12 * ((1 + pointCount / 10) * 0.60)),
+        borderRadius = Math.floor(width / 2)
+
+    // clister dimnesion upper limit upper limit 
+    width = width <= (this.props.clusterInitialDimension * 2) ? width : this.props.clusterInitialDimension * 2
+    height = height <= (this.props.clusterInitialDimension * 2) ? height : this.props.clusterInitialDimension * 2
+    fontSize = fontSize <= 22 ? fontSize : 22
 
     if (pointCount >= 2 && pointCount <= 10) {
       textForCluster = pointCount.toString()
@@ -68,6 +73,7 @@ ClusterMarker.propTypes = {
   properties: PropTypes.object.isRequired,
   renderMarker: PropTypes.func.isRequired,
   containerStyle: PropTypes.object.isRequired,
+  clusterInitialDimension: PropTypes.number.isRequired,
 }
 
 const styles = StyleSheet.create({
