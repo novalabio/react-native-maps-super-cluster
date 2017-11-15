@@ -13,7 +13,7 @@ This module wants to provide a stable and performing solution for maps clusterin
 
 * the prop `key` of the markers rendered through `renderMarker` should not be left up to React. Instead, we strongly suggest to use an `id` in order the have unique keys while still taking advantage of React's recycling.
 
-```
+```JSX
 import React, { Component } from 'react'
 import { Marker } from 'react-native-maps'
 import ClusteredMapView from 'react-native-maps-super-cluster'
