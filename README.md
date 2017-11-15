@@ -49,6 +49,10 @@ export default class MyClusteredMapView extends Component {
 }
 ```
 
+# Example
+
+[See the showcase application](https://github.com/novalabio/react-native-maps-super-cluster-example).
+
 # Props Definition
 
 **Name** | **Type** | **Required** | **Default** | **Note**
