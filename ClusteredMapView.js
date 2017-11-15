@@ -51,10 +51,7 @@ export default class ClusteredMapView extends Component {
   }
 
   componentWillMount() {
-    const { width, height } = Dimensions.get('window')
-
-    this.width = this.props.width || width
-    this.height = this.props.height || height
+    this.dimensions = [this.props.width, this.props.height]
     this.isAndroid = Platform.OS === 'android'
 
     this.setState({ region: this.props.region || this.props.initialRegion })
@@ -65,7 +62,7 @@ export default class ClusteredMapView extends Component {
 
       this.index = SuperCluster({ // eslint-disable-line new-cap
         maxZoom: this.props.maxZoom,
-        radius: Math.floor(this.width / 22)
+        radius: Math.floor(this.props.width / 22)
       })
 
       // get formatted GeoPoints for cluster
@@ -88,6 +85,8 @@ export default class ClusteredMapView extends Component {
     this.mapview = ref
   }
 
+  getMapRef = () => this.mapview
+
   clustersChanged = (nextState) =>
     Object.keys(this.state.data).length !== Object.keys(nextState.data).length
 
@@ -100,12 +99,14 @@ export default class ClusteredMapView extends Component {
 
   getClusters(region) {
     const bbox = getBoundingBox(region),
-          viewport = (region.longitudeDelta) >= 40 ? 0 : GeoViewport.viewport(bbox, [this.width, this.height])
+          viewport = (region.longitudeDelta) >= 40 ? 0 : GeoViewport.viewport(bbox, this.dimensions)
 
     return this.index.getClusters(bbox, viewport.zoom || 0)
   }
 
   onClusterPress(cluster) {
+    this.props.onClusterPress && this.props.onClusterPress(cluster)
+
     const center = {
       latitude: cluster.geometry.coordinates[1],
       longitude: cluster.geometry.coordinates[0],
@@ -119,9 +120,9 @@ export default class ClusteredMapView extends Component {
   // TODO try to simply compare the longitude and latitude delta
   isZoomLevelChanged = (prevRegion, region) => {
     const bbox1 = getBoundingBox(prevRegion),
-          viewportPrevRegion = (prevRegion.longitudeDelta) >= 40 ? 0 : GeoViewport.viewport(bbox1, [this.width, this.height]),
+          viewportPrevRegion = (prevRegion.longitudeDelta) >= 40 ? 0 : GeoViewport.viewport(bbox1, this.dimensions),
           bbox2 = getBoundingBox(region),
-          viewportRegion = (region.longitudeDelta) >= 40 ? 0 : GeoViewport.viewport(bbox2, [this.width, this.height])
+          viewportRegion = (region.longitudeDelta) >= 40 ? 0 : GeoViewport.viewport(bbox2, this.dimensions)
 
     return viewportRegion.zoom !== viewportPrevRegion.zoom
   }
@@ -152,10 +153,10 @@ export default class ClusteredMapView extends Component {
 }
 ClusteredMapView.defaultProps = {
   maxZoom: 40,
-  clusterRadius: 26,
   animateClusters: true,
-  clusteringEnabled: true,
-  clusterInitialDimension: 30
+  clusterInitialDimension: 30,
+  width: Dimensions.get('window').width,
+  height: Dimensions.get('window').height
 }
 
 ClusteredMapView.propTypes = {
@@ -164,7 +165,6 @@ ClusteredMapView.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
   clusterInitialDimension: PropTypes.number,
-  clusterRadius: PropTypes.number.isRequired, // ppi
   // array
   data: PropTypes.array.isRequired,
   // func
@@ -174,7 +174,6 @@ ClusteredMapView.propTypes = {
   renderMarker: PropTypes.func.isRequired,
   // bool
   animateClusters: PropTypes.bool.isRequired,
-  clusteringEnabled: PropTypes.bool.isRequired,
   // object
   textStyle: PropTypes.object.isRequired,
   containerStyle: PropTypes.object.isRequired
