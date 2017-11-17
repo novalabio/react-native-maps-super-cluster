@@ -52,6 +52,7 @@ export default class MyClusteredMapView extends Component {
 # Example
 
 [See the showcase application](https://github.com/novalabio/react-native-maps-super-cluster-example).
+<img src="https://github.com/wix/react-native/blob/master/src/videos/demo.gif?raw=true" width="240">
 
 # Props Definition
 
