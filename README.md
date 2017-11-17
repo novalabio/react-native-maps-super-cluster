@@ -1,6 +1,14 @@
 # React Native Super Cluster
 This module wraps [AirBnB's react-native-maps](https://github.com/airbnb/react-native-maps) and uses [MapBox's SuperCluster](https://github.com/mapbox/supercluster) as clustering engine.
 
+# Example
+
+[See the showcase application](https://github.com/novalabio/react-native-maps-super-cluster-example).
+
+<center>
+<img src="https://github.com/novalabio/react-native-maps-super-cluster-example/blob/master/assets/demo.gif?raw=true" width="240">
+</center>
+
 ## Rationale
 This module wants to provide a stable and performing solution for maps clustering in React Native. In particular, our efforts are focused on integrating SuperCluster methods into React's state/lifecycle events, ensuring stability, compatibility and great performance.
 
@@ -48,11 +56,6 @@ export default class MyClusteredMapView extends Component {
   }
 }
 ```
-
-# Example
-
-[See the showcase application](https://github.com/novalabio/react-native-maps-super-cluster-example).
-<img src="https://github.com/wix/react-native/blob/master/src/videos/demo.gif?raw=true" width="240">
 
 # Props Definition
 
