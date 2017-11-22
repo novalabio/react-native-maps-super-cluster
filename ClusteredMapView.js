@@ -147,6 +147,7 @@ export default class ClusteredMapView extends Component {
             )
           })
         }
+        {this.props.children}
       </MapView>
     )
   }
