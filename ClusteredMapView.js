@@ -57,22 +57,13 @@ export default class ClusteredMapView extends Component {
     this.setState({ region: this.props.region || this.props.initialRegion })
   }
 
+  componentDidMount() {
+    this.clusterize(this.props.data)
+  }
+
   componentWillReceiveProps(nextProps) {
-    if (this.props.data !== nextProps.data) {
-
-      this.index = SuperCluster({ // eslint-disable-line new-cap
-        maxZoom: this.props.maxZoom,
-        radius: Math.floor(this.props.width / 22)
-      })
-
-      // get formatted GeoPoints for cluster
-      const rawData = nextProps.data.map(itemToGeoJSONFeature)
-      // load geopoints into SuperCluster
-      this.index.load(rawData)
-
-      const data = this.getClusters(this.state.region)
-      this.setState({ data })
-    }
+    if (this.props.data !== nextProps.data)
+      this.clusterize()
   }
 
   componentWillUpdate(nextProps, nextState) {
@@ -81,30 +72,45 @@ export default class ClusteredMapView extends Component {
                     && LayoutAnimation.configureNext(LayoutAnimation.Presets.spring)
   }
 
-  mapRef(ref) {
+  mapRef = (ref) => {
     this.mapview = ref
   }
 
   getMapRef = () => this.mapview
 
+  clusterize = (dataset) => {
+    this.index = SuperCluster({ // eslint-disable-line new-cap
+      maxZoom: this.props.maxZoom,
+      radius: Math.floor(this.props.width / 22)
+    })
+
+    // get formatted GeoPoints for cluster
+    const rawData = dataset.map(itemToGeoJSONFeature)
+    // load geopoints into SuperCluster
+    this.index.load(rawData)
+
+    const data = this.getClusters(this.state.region)
+    this.setState({ data })
+  }
+
   clustersChanged = (nextState) =>
     Object.keys(this.state.data).length !== Object.keys(nextState.data).length
 
-  onRegionChangeComplete(region) {
+  onRegionChangeComplete = (region) => {
     if ((this.state.data.length > 0) && this.isZoomLevelChanged(this.state.region, region))  {
       const data = this.getClusters(region)
       this.setState({ region, data })
     }
   }
 
-  getClusters(region) {
+  getClusters = (region) => {
     const bbox = getBoundingBox(region),
           viewport = (region.longitudeDelta) >= 40 ? 0 : GeoViewport.viewport(bbox, this.dimensions)
 
     return this.index.getClusters(bbox, viewport.zoom || 0)
   }
 
-  onClusterPress(cluster) {
+  onClusterPress = (cluster) => {
     this.props.onClusterPress && this.props.onClusterPress(cluster)
 
     const center = {
