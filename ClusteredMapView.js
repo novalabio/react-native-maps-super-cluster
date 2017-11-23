@@ -63,7 +63,7 @@ export default class ClusteredMapView extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.data !== nextProps.data)
-      this.clusterize()
+      this.clusterize(nextProps.data)
   }
 
   componentWillUpdate(nextProps, nextState) {
