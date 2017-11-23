@@ -32,8 +32,6 @@ const getBoundingBox = (region) => ([
   region.latitude + region.latitudeDelta // northLat - max lat
 ])
 
-// const isZoomLevelChange = (prevRegion, region) => prevRegion.longitudeDelta !== region.longitudeDelta
-
 export default class ClusteredMapView extends Component {
 
   constructor(props) {
@@ -86,6 +84,7 @@ export default class ClusteredMapView extends Component {
 
     // get formatted GeoPoints for cluster
     const rawData = dataset.map(itemToGeoJSONFeature)
+
     // load geopoints into SuperCluster
     this.index.load(rawData)
 
@@ -113,17 +112,22 @@ export default class ClusteredMapView extends Component {
   onClusterPress = (cluster) => {
     this.props.onClusterPress && this.props.onClusterPress(cluster)
 
+    const expansionZoom = this.index.getClusterExpansionZoom(cluster.properties.cluster_id)
+    const newBbox = GeoViewport.bounds([cluster.geometry.coordinates[1], cluster.geometry.coordinates[0]], expansionZoom, this.dimensions)
+
+    const latitudeDelta = (newBbox[3] - newBbox[1]) / 2,
+          longitudeDelta = (newBbox[2] - newBbox[0]) / 2
+
     const center = {
       latitude: cluster.geometry.coordinates[1],
       longitude: cluster.geometry.coordinates[0],
-      latitudeDelta: this.state.region.latitudeDelta / 3,
-      longitudeDelta: this.state.region.longitudeDelta / 3
+      latitudeDelta: latitudeDelta / 2,
+      longitudeDelta: longitudeDelta / 2,
     }
 
     this.mapview && this.mapview.animateToRegion(center)
   }
 
-  // TODO try to simply compare the longitude and latitude delta
   isZoomLevelChanged = (prevRegion, region) => {
     const bbox1 = getBoundingBox(prevRegion),
           viewportPrevRegion = (prevRegion.longitudeDelta) >= 40 ? 0 : GeoViewport.viewport(bbox1, this.dimensions),
@@ -158,6 +162,7 @@ export default class ClusteredMapView extends Component {
     )
   }
 }
+
 ClusteredMapView.defaultProps = {
   maxZoom: 40,
   animateClusters: true,

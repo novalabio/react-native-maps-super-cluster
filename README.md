@@ -81,7 +81,6 @@ containerStyle | Object | false | NovaLab Brand colors | Style of the clusters `
 * trigger events on clusters implode/explode
 #### performance
 * enhance `isZoomLevelChanged` math
-* enhance clusters press-to-zoom math
 
 # Contributors
 
