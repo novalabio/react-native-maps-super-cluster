@@ -68,7 +68,7 @@ clusterInitialDimension | Number | false | 30 | cluster view base dimension in d
 data | Array <Object> | true | undefined | Objects must have an attribute representing a `GeoPoint`, i.e. `{ latitude: x, longitude: y }`
 onExplode | Function | false | undefined | TODO
 onImplode | Function | false | undefined | TODO
-onClusterPress | Function | false | undefined |
+onClusterPress | Function | false |  | Add additional behaviours to the clusterPress handler. (onClusterPress automatically moves the map to the cluster region and zoomes on the cluster explode zoom level)
 renderMarker | Function | false | undefined | Must return a react-native-maps' Marker component
 animateClusters | Bool | false | true | Animate imploding/exploding of clusters' markers and clusters size change. **Works only on iOS**.
 textStyle | Object | false | NovaLab Brand colors | Style of the `Text` component used for clusters counters
