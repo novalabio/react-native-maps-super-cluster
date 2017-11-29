@@ -96,7 +96,9 @@ export default class ClusteredMapView extends Component {
     Object.keys(this.state.data).length !== Object.keys(nextState.data).length
 
   onRegionChangeComplete = (region) => {
-    if ((this.state.data.length > 0) && this.isZoomLevelChanged(this.state.region, region))  {
+    this.props.onRegionChangeComplete && this.props.onRegionChangeComplete(region)
+
+    if ((this.state.data.length > 0) && this.isZoomLevelChanged(this.state.region, region)) {
       const data = this.getClusters(region)
       this.setState({ region, data })
     }
