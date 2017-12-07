@@ -14,7 +14,7 @@ import MapView from 'react-native-maps'
 import SuperCluster from 'supercluster'
 import GeoViewport from '@mapbox/geo-viewport'
 // components / views
-import CustomMarker from './ClusterMarker'
+import ClusterMarker from './ClusterMarker'
 
 const itemToGeoJSONFeature = (item) => ({
   type: 'Feature',
@@ -98,7 +98,7 @@ export default class ClusteredMapView extends Component {
   onRegionChangeComplete = (region) => {
     this.props.onRegionChangeComplete && this.props.onRegionChangeComplete(region)
 
-    if ((this.state.data.length > 0) && this.isZoomLevelChanged(this.state.region, region)) {
+    if (region.longitudeDelta <= 80) {
       const data = this.getClusters(region)
       this.setState({ region, data })
     }
@@ -106,15 +106,19 @@ export default class ClusteredMapView extends Component {
 
   getClusters = (region) => {
     const bbox = getBoundingBox(region),
-          viewport = (region.longitudeDelta) >= 40 ? 0 : GeoViewport.viewport(bbox, this.dimensions)
+          viewport = (region.longitudeDelta) >= 40 ? 1 : GeoViewport.viewport(bbox, this.dimensions)
 
-    return this.index.getClusters(bbox, viewport.zoom || 0)
+    return this.index.getClusters(bbox, (viewport.zoom || 1))
   }
 
   onClusterPress = (cluster) => {
     this.props.onClusterPress && this.props.onClusterPress(cluster)
 
-    const expansionZoom = this.index.getClusterExpansionZoom(cluster.properties.cluster_id)
+    let expansionZoom = this.index.getClusterExpansionZoom(cluster.properties.cluster_id)
+
+    // fix bug on exspansionZoom
+    expansionZoom === 1 && expansionZoom++
+
     const newBbox = GeoViewport.bounds([cluster.geometry.coordinates[1], cluster.geometry.coordinates[0]], expansionZoom, this.dimensions)
 
     const latitudeDelta = (newBbox[3] - newBbox[1]) / 2,
@@ -132,9 +136,9 @@ export default class ClusteredMapView extends Component {
 
   isZoomLevelChanged = (prevRegion, region) => {
     const bbox1 = getBoundingBox(prevRegion),
-          viewportPrevRegion = (prevRegion.longitudeDelta) >= 40 ? 0 : GeoViewport.viewport(bbox1, this.dimensions),
+          viewportPrevRegion = (prevRegion.longitudeDelta) >= 40 ? 1 : GeoViewport.viewport(bbox1, this.dimensions),
           bbox2 = getBoundingBox(region),
-          viewportRegion = (region.longitudeDelta) >= 40 ? 0 : GeoViewport.viewport(bbox2, this.dimensions)
+          viewportRegion = (region.longitudeDelta) >= 40 ? 1 : GeoViewport.viewport(bbox2, this.dimensions)
 
     return viewportRegion.zoom !== viewportPrevRegion.zoom
   }
@@ -146,14 +150,18 @@ export default class ClusteredMapView extends Component {
         ref={this.mapRef}
         onRegionChangeComplete={this.onRegionChangeComplete}>
         {
-          this.state.data.map((d, i) => {
+          this.state.data.map((d) => {
+
+            if (d.properties.point_count === 0)
+              return this.props.renderMarker(d.properties.item)
+
             return (
-              <CustomMarker
+              <ClusterMarker
                 {...d}
-                key={`cluster-marker${i}`}
                 onPress={this.onClusterPress}
                 textStyle={this.props.textStyle}
                 renderMarker={this.props.renderMarker}
+                key={`cluster-${d.properties.cluster_id}`}
                 containerStyle={this.props.containerStyle}
                 clusterInitialDimension={this.props.clusterInitialDimension} />
             )
@@ -166,7 +174,7 @@ export default class ClusteredMapView extends Component {
 }
 
 ClusteredMapView.defaultProps = {
-  maxZoom: 40,
+  maxZoom: 20,
   animateClusters: true,
   clusterInitialDimension: 30,
   width: Dimensions.get('window').width,
@@ -190,6 +198,7 @@ ClusteredMapView.propTypes = {
   animateClusters: PropTypes.bool.isRequired,
   // object
   textStyle: PropTypes.object.isRequired,
-  containerStyle: PropTypes.object.isRequired
+  containerStyle: PropTypes.object.isRequired,
   // string
+  uniqueIdProperty: PropTypes.string.isRequired,
 }

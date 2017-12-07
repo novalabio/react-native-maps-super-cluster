@@ -18,8 +18,6 @@ export default class ClusterMarker extends Component {
   }
 
   render() {
-    if (this.props.properties.point_count === 0)
-      return this.props.renderMarker(this.props.properties.item)
 
     const pointCount = this.props.properties.point_count // eslint-disable-line camelcase
     const latitude = this.props.geometry.coordinates[1],
@@ -35,7 +33,7 @@ export default class ClusterMarker extends Component {
     // clister dimnesion upper limit upper limit 
     width = width <= (this.props.clusterInitialDimension * 2) ? width : this.props.clusterInitialDimension * 2
     height = height <= (this.props.clusterInitialDimension * 2) ? height : this.props.clusterInitialDimension * 2
-    fontSize = fontSize <= 22 ? fontSize : 22
+    fontSize = fontSize <= 18 ? fontSize : 18
 
     if (pointCount >= 2 && pointCount <= 10) {
       textForCluster = pointCount.toString()
