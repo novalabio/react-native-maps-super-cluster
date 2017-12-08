@@ -200,5 +200,4 @@ ClusteredMapView.propTypes = {
   textStyle: PropTypes.object.isRequired,
   containerStyle: PropTypes.object.isRequired,
   // string
-  uniqueIdProperty: PropTypes.string.isRequired,
 }
