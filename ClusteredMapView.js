@@ -78,6 +78,7 @@ export default class ClusteredMapView extends Component {
 
   clusterize = (dataset) => {
     this.index = SuperCluster({ // eslint-disable-line new-cap
+      minZoom: this.props.minZoom,
       maxZoom: this.props.maxZoom,
       radius: Math.floor(this.props.width / 22)
     })
@@ -174,6 +175,7 @@ export default class ClusteredMapView extends Component {
 }
 
 ClusteredMapView.defaultProps = {
+  minZoom: 0,
   maxZoom: 20,
   animateClusters: true,
   clusterInitialDimension: 30,
@@ -187,6 +189,8 @@ ClusteredMapView.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
   clusterInitialDimension: PropTypes.number,
+  minZoom: PropTypes.number,
+  maxZoom: PropTypes.number,
   // array
   data: PropTypes.array.isRequired,
   // func
@@ -200,5 +204,5 @@ ClusteredMapView.propTypes = {
   textStyle: PropTypes.object.isRequired,
   containerStyle: PropTypes.object.isRequired,
   // string
-  uniqueIdProperty: PropTypes.string.isRequired,
+  uniqueIdProperty: PropTypes.string.isRequired, // What is this prop for? Never used!
 }

@@ -64,6 +64,8 @@ export default class MyClusteredMapView extends Component {
 ---------|----------|--------------|-------------|---------
 width | Number | false | window width | map's width
 height | Number | false | window height | map's height
+minZoom | Number | false | 0 | Minimum zoom level at which clusters are generated
+maxZoom | Number | false | 20 | Maximum zoom level at which clusters are generated
 clusterInitialDimension | Number | false | 30 | cluster view base dimension in dpi/ppi. Clusters size grows with amount of clustered markers
 data | Array <Object> | true | undefined | Objects must have an attribute representing a `GeoPoint`, i.e. `{ latitude: x, longitude: y }`
 onExplode | Function | false | undefined | TODO
