@@ -62,10 +62,10 @@ export default class MyClusteredMapView extends Component {
 
 **Name** | **Type** | **Required** | **Default** | **Note**
 ---------|----------|--------------|-------------|---------
-radius | Number | false | window width * 4,5% | SuperCluster radius
-extent | Number | false | 512 | SuperCluster extent
-minZoom | Number | false | 1 | SuperCluster minZoom
-maxZoom | Number | false | 20 | SuperCluster maxZoom
+radius | Number | false | window width * 4,5% | [SuperCluster radius](https://github.com/mapbox/supercluster#options)
+extent | Number | false | 512 | [SuperCluster extent](https://github.com/mapbox/supercluster#options)
+minZoom | Number | false | 1 | [SuperCluster minZoom](https://github.com/mapbox/supercluster#options)
+maxZoom | Number | false | 20 | [SuperCluster maxZoom](https://github.com/mapbox/supercluster#options)
 width | Number | false | window width | map's width
 height | Number | false | window height | map's height
 scaleUpRatio(markersCount: Number); | Function | false | undefined | Must return a number, used to multiply clusters and font sizes based on `markersCount`
