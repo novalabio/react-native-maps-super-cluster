@@ -23,14 +23,20 @@ export default class ClusterMarker extends Component {
     const latitude = this.props.geometry.coordinates[1],
           longitude = this.props.geometry.coordinates[0]
 
+    let scaleUpRatio = this.props.scaleUpRatio ? this.props.scaleUpRatio(pointCount) : (1 + (Math.min(pointCount, 999) / 100))
+    if (isNaN(scaleUpRatio)) {
+      console.warn('scaleUpRatio must return a Number, falling back to default') // eslint-disable-line
+      scaleUpRatio = 1 + (Math.min(pointCount, 999) / 100)
+    }
+
     let textForCluster = '1'
 
-    let width = Math.floor(this.props.clusterInitialDimension * ((1 + pointCount / 10) * 0.60)),
-        height = Math.floor(this.props.clusterInitialDimension * ((1 + pointCount / 10) * 0.60)),
-        fontSize = Math.floor(12 * ((1 + pointCount / 10) * 0.60)),
+    let width = Math.floor(this.props.clusterInitialDimension * scaleUpRatio),
+        height = Math.floor(this.props.clusterInitialDimension * scaleUpRatio),
+        fontSize = Math.floor(this.props.clusterInitialFontSize * scaleUpRatio),
         borderRadius = Math.floor(width / 2)
 
-    // clister dimnesion upper limit upper limit 
+    // cluster dimension upper limit
     width = width <= (this.props.clusterInitialDimension * 2) ? width : this.props.clusterInitialDimension * 2
     height = height <= (this.props.clusterInitialDimension * 2) ? height : this.props.clusterInitialDimension * 2
     fontSize = fontSize <= 18 ? fontSize : 18
@@ -65,12 +71,14 @@ ClusterMarker.defaultProps = {
 }
 
 ClusterMarker.propTypes = {
+  scaleUpRatio: PropTypes.func,
   onPress: PropTypes.func.isRequired,
   geometry: PropTypes.object.isRequired,
   textStyle: PropTypes.object.isRequired,
   properties: PropTypes.object.isRequired,
   renderMarker: PropTypes.func.isRequired,
   containerStyle: PropTypes.object.isRequired,
+  clusterInitialFontSize: PropTypes.number.isRequired,
   clusterInitialDimension: PropTypes.number.isRequired,
 }
 
