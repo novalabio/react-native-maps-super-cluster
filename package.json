@@ -32,11 +32,11 @@
   },
   "homepage": "https://github.com/novalabio/react-native-maps-super-cluster#readme",
   "dependencies": {
-    "supercluster": "^3.0.1",
-    "@mapbox/geo-viewport": "^0.2.2"
+    "@mapbox/geo-viewport": "^0.2.2",
+    "supercluster": "^3.0.1"
   },
   "peerDependencies": {
-    "react-native-maps": "^0.17.1",
+    "react-native-maps": "^0.19.0",
     "prop-types": "^15.6.0"
   }
 }
