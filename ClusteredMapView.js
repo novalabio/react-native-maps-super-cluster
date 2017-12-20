@@ -2,11 +2,10 @@
 
 // base libs
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import {
   Platform,
   Dimensions,
-  // PixelRatio,
   LayoutAnimation
 } from 'react-native'
 // map-related libs
@@ -15,24 +14,14 @@ import SuperCluster from 'supercluster'
 import GeoViewport from '@mapbox/geo-viewport'
 // components / views
 import ClusterMarker from './ClusterMarker'
+// libs / utils
+import {
+  regionToBoundingBox,
+  boundingBoxToRegion,
+  itemToGeoJSONFeature
+} from './util'
 
-const itemToGeoJSONFeature = (item) => ({
-  type: 'Feature',
-  geometry: {
-    type: 'Point',
-    coordinates: [item.location.longitude, item.location.latitude]
-  },
-  properties: { point_count: 0, item } // eslint-disable-line camelcase
-})
-
-const getBoundingBox = (region) => ([
-  region.longitude - region.longitudeDelta, // westLng - min lng
-  region.latitude - region.latitudeDelta, // southLat - min lat
-  region.longitude + region.longitudeDelta, // eastLng - max lng
-  region.latitude + region.latitudeDelta // northLat - max lat
-])
-
-export default class ClusteredMapView extends Component {
+export default class ClusteredMapView extends PureComponent {
 
   constructor(props) {
     super(props)
@@ -75,6 +64,8 @@ export default class ClusteredMapView extends Component {
 
   getMapRef = () => this.mapview
 
+  getClusteringEngine = () => this.index
+
   clusterize = (dataset) => {
     this.index = SuperCluster({ // eslint-disable-line new-cap
       extent: this.props.extent,
@@ -104,33 +95,47 @@ export default class ClusteredMapView extends Component {
   }
 
   getClusters = (region) => {
-    const bbox = getBoundingBox(region),
+    const bbox = regionToBoundingBox(region),
           viewport = (region.longitudeDelta) >= 40 ? { zoom: this.props.minZoom } : GeoViewport.viewport(bbox, this.dimensions)
 
     return this.index.getClusters(bbox, viewport.zoom)
   }
 
   onClusterPress = (cluster) => {
-    this.props.onClusterPress && this.props.onClusterPress(cluster)
-
-    let expansionZoom = this.index.getClusterExpansionZoom(cluster.properties.cluster_id)
-
-    // fix strange behavior on exspansionZoom calcs
-    expansionZoom === 1 && expansionZoom++
-
-    const newBbox = GeoViewport.bounds([cluster.geometry.coordinates[1], cluster.geometry.coordinates[0]], expansionZoom, this.dimensions)
-
-    const latitudeDelta = (newBbox[3] - newBbox[1]) / 2,
-          longitudeDelta = (newBbox[2] - newBbox[0]) / 2
-
-    const center = {
-      latitude: cluster.geometry.coordinates[1],
-      longitude: cluster.geometry.coordinates[0],
-      latitudeDelta: latitudeDelta / 2,
-      longitudeDelta: longitudeDelta / 2,
+    // cluster press behavior might be extremely custom.
+    if (this.props.onClusterPress && !this.props.preserveClusterPressBehavior) {
+      this.props.onClusterPress(cluster.properties.cluster_id)
+      return
     }
 
-    this.mapview && this.mapview.animateToRegion(center)
+    // //////////////////////////////////////////////////////////////////////////////////
+    // NEW IMPLEMENTATION (with fitToCoordinates)
+    // //////////////////////////////////////////////////////////////////////////////////
+    // get cluster children
+    const children = this.index.getLeaves(cluster.properties.cluster_id, this.props.clusterPressMaxChildren)
+    // fit right around them, keeping edge padding into account
+    this.mapview.fitToCoordinates(children.map(c => c.properties.item.location), { edgePadding: this.props.edgePadding })
+
+    this.props.onClusterPress && this.props.onClusterPress(cluster.properties.cluster_id, children)
+
+    // //////////////////////////////////////////////////////////////////////////////////
+    // OLD, LESS ACCURATE, IMPLEMENTATION (with animateToRegion)
+    // //////////////////////////////////////////////////////////////////////////////////
+    // let ne = { latitude: 0, longitude: 0 },
+    //     sw = { latitude: 1000, longitude: 1000 }
+
+    // children.forEach(c => {
+    //   const location = c.properties.item.location
+
+    //   ne.latitude = Math.max(ne.latitude, location.latitude)
+    //   ne.longitude = Math.max(ne.longitude, location.longitude)
+
+    //   sw.latitude = Math.min(sw.latitude, location.latitude)
+    //   sw.longitude = Math.min(sw.longitude, location.longitude)
+    // })
+
+    // this.mapview.animateToRegion(boundingBoxToRegion({ ne, sw }))
+    // this.props.onClusterPress && this.props.onClusterPress(cluster.properties.cluster_id, children)
   }
 
   render() {
@@ -175,8 +180,11 @@ ClusteredMapView.defaultProps = {
   clusteringEnabled: true,
   clusterInitialFontSize: 12,
   clusterInitialDimension: 30,
+  clusterPressMaxChildren: 100,
+  preserveClusterPressBehavior: true,
   width: Dimensions.get('window').width,
-  height: Dimensions.get('window').height
+  height: Dimensions.get('window').height,
+  edgePadding: { top: 10, left: 10, right: 10, bottom: 10 }
 }
 
 ClusteredMapView.propTypes = {
@@ -189,6 +197,7 @@ ClusteredMapView.propTypes = {
   minZoom: PropTypes.number.isRequired,
   maxZoom: PropTypes.number.isRequired,
   clusterInitialFontSize: PropTypes.number.isRequired,
+  clusterPressMaxChildren: PropTypes.number.isRequired,
   clusterInitialDimension: PropTypes.number.isRequired,
   // array
   data: PropTypes.array.isRequired,
@@ -201,8 +210,10 @@ ClusteredMapView.propTypes = {
   // bool
   animateClusters: PropTypes.bool.isRequired,
   clusteringEnabled: PropTypes.bool.isRequired,
+  preserveClusterPressBehavior: PropTypes.bool.isRequired,
   // object
   textStyle: PropTypes.object.isRequired,
+  edgePadding: PropTypes.object.isRequired,
   containerStyle: PropTypes.object.isRequired,
   // string
 }

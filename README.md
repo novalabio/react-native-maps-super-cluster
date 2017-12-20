@@ -62,30 +62,33 @@ export default class MyClusteredMapView extends Component {
 
 **Name** | **Type** | **Required** | **Default** | **Note**
 ---------|----------|--------------|-------------|---------
-radius | Number | false | window width * 4,5% | [SuperCluster radius](https://github.com/mapbox/supercluster#options)
-extent | Number | false | 512 | [SuperCluster extent](https://github.com/mapbox/supercluster#options)
-minZoom | Number | false | 1 | [SuperCluster minZoom](https://github.com/mapbox/supercluster#options)
-maxZoom | Number | false | 20 | [SuperCluster maxZoom](https://github.com/mapbox/supercluster#options)
-width | Number | false | window width | map's width
-height | Number | false | window height | map's height
-scaleUpRatio(markersCount: Number); | Function | false | undefined | Must return a number, used to multiply clusters and font sizes based on `markersCount`
-clusterInitialFontSize | Number | false | 12 | font base size for cluster counter. Scales up proportionally to clustered markers
-clusterInitialDimension | Number | false | 30 | cluster view base dimension in dpi/ppi. Scales up proportionally to clustered markers
-data | Array <Object> | true | undefined | Objects must have an attribute `location` representing a `GeoPoint`, i.e. `{ latitude: x, longitude: y }`
+radius | Number | false | window width * 4,5% | [SuperCluster radius](https://github.com/mapbox/supercluster#options).
+extent | Number | false | 512 | [SuperCluster extent](https://github.com/mapbox/supercluster#options).
+minZoom | Number | false | 1 | [SuperCluster minZoom](https://github.com/mapbox/supercluster#options).
+maxZoom | Number | false | 20 | [SuperCluster maxZoom](https://github.com/mapbox/supercluster#options).
+width | Number | false | window width | map's width.
+height | Number | false | window height | map's height.
+scaleUpRatio(markersCount: Number); | Function | false | undefined | Must return a number, used to multiply clusters and font sizes based on `markersCount`.
+clusterInitialFontSize | Number | false | 12 | font base size for cluster counter. Scales up proportionally to clustered markers.
+clusterInitialDimension | Number | false | 30 | cluster view base dimension in dpi/ppi. Scales up proportionally to clustered markers.
+data | Array <Object> | true | undefined | Objects must have an attribute `location` representing a `GeoPoint`, i.e. `{ latitude: x, longitude: y }`.
 onExplode | Function | false | undefined | TODO
 onImplode | Function | false | undefined | TODO
-onClusterPress | Function | false |  | Add additional behaviours to the clusterPress handler. (onClusterPress automatically moves the map to the cluster region and zoomes on the cluster explode zoom level)
-renderMarker | Function | false | undefined | Must return a react-native-maps' Marker component
+onClusterPress(clusterId, ?children) | Function | false |  | Add (or completey override) behaviours to the clusterPress handler. `children` is passed when default behavior is preserved (see `preserveClusterPressBehavior` prop).
+preserveClusterPressBehavior | Bool | false | true | Whether `onClusterPress` prop should completely override module's behavior rather than integrate it.
+clusterPressMaxChildren | Function | false | 100 | Max number of cluster leaves returned as second parameter of `onClusterPress`.
+edgePadding | Object | false | { top: 10, left: 10, bottom: 10, right: 10 } | Edge padding for [react-native-maps's](https://github.com/react-community/react-native-maps/blob/master/docs/mapview.md#methods) `fitToCoordinates` method, called in `onClusterPress` for fitting to pressed cluster children.
+renderMarker | Function | false | undefined | Must return a react-native-maps' Marker component.
 animateClusters | Bool | false | true | Animate imploding/exploding of clusters' markers and clusters size change. **Works only on iOS**.
-clusteringEnabled | Bool | false | true | Dynamically set whether to pass through clustering functions or immediately render markers as a normal mapview
-textStyle | Object | false | NovaLab Brand colors | Style of the `Text` component used for clusters counters
-containerStyle | Object | false | NovaLab Brand colors | Style of the clusters `View`
+clusteringEnabled | Bool | false | true | Dynamically set whether to pass through clustering functions or immediately render markers as a normal mapview.
+textStyle | Object | false | NovaLab Brand colors | Style of the `Text` component used for clusters counters.
+containerStyle | Object | false | NovaLab Brand colors | Style of the clusters `View`.
 
 ## Methods
 **Name** | **Params** | **Description** | **Note**
 ---------|------------|-----------------|---------
 getMapRef | none | Getter for underlying react-native-maps instance
-
+getClusteringEngine | none | Getter for underlying SuperCluster instance
 
 ## Production usage
 If you are using this module in a production application, please submit a PR or contact us to add it here.
