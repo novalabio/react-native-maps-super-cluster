@@ -112,11 +112,13 @@ export default class ClusteredMapView extends PureComponent {
     // NEW IMPLEMENTATION (with fitToCoordinates)
     // //////////////////////////////////////////////////////////////////////////////////
     // get cluster children
-    const children = this.index.getLeaves(cluster.properties.cluster_id, this.props.clusterPressMaxChildren)
-    // fit right around them, keeping edge padding into account
-    this.mapview.fitToCoordinates(children.map(c => c.properties.item.location), { edgePadding: this.props.edgePadding })
+    const children = this.index.getLeaves(cluster.properties.cluster_id, this.props.clusterPressMaxChildren),
+          markers = children.map(c => c.properties.item)
 
-    this.props.onClusterPress && this.props.onClusterPress(cluster.properties.cluster_id, children)
+    // fit right around them, keeping edge padding into account
+    this.mapview.fitToCoordinates(markers.map(m => m.location), { edgePadding: this.props.edgePadding })
+
+    this.props.onClusterPress && this.props.onClusterPress(cluster.properties.cluster_id, markers)
 
     // //////////////////////////////////////////////////////////////////////////////////
     // OLD, LESS ACCURATE, IMPLEMENTATION (with animateToRegion)
