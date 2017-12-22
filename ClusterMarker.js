@@ -23,6 +23,16 @@ export default class ClusterMarker extends Component {
     const latitude = this.props.geometry.coordinates[1],
           longitude = this.props.geometry.coordinates[0]
 
+    if (this.props.renderCluster) {
+
+      const cluster = {
+        pointCount,
+        coordinates: { latitude, longitude },
+        clusterId: this.props.properties.cluster_id,
+      }
+      return this.props.renderCluster(cluster, this.onPress)
+    }
+
     let scaleUpRatio = this.props.scaleUpRatio ? this.props.scaleUpRatio(pointCount) : (1 + (Math.min(pointCount, 999) / 100))
     if (isNaN(scaleUpRatio)) {
       console.warn('scaleUpRatio must return a Number, falling back to default') // eslint-disable-line
@@ -72,11 +82,11 @@ ClusterMarker.defaultProps = {
 
 ClusterMarker.propTypes = {
   scaleUpRatio: PropTypes.func,
+  renderCluster: PropTypes.func,
   onPress: PropTypes.func.isRequired,
   geometry: PropTypes.object.isRequired,
   textStyle: PropTypes.object.isRequired,
   properties: PropTypes.object.isRequired,
-  renderMarker: PropTypes.func.isRequired,
   containerStyle: PropTypes.object.isRequired,
   clusterInitialFontSize: PropTypes.number.isRequired,
   clusterInitialDimension: PropTypes.number.isRequired,

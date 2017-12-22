@@ -58,9 +58,7 @@ export default class ClusteredMapView extends PureComponent {
                     && LayoutAnimation.configureNext(LayoutAnimation.Presets.spring)
   }
 
-  mapRef = (ref) => {
-    this.mapview = ref
-  }
+  mapRef = (ref) => this.mapview = ref
 
   getMapRef = () => this.mapview
 
@@ -102,10 +100,15 @@ export default class ClusteredMapView extends PureComponent {
   }
 
   onClusterPress = (cluster) => {
+
     // cluster press behavior might be extremely custom.
-    if (this.props.onClusterPress && !this.props.preserveClusterPressBehavior) {
-      this.props.onClusterPress(cluster.properties.cluster_id)
+    if (!this.props.preserveClusterPressBehavior) {
+      this.props.onClusterPress && this.props.onClusterPress(cluster.properties.cluster_id)
       return
+    }
+
+    if (this.props.onClusterPress) {
+        console.warn("you can't preserve the original cluster press behaviour and perform a custom onClusterPress function, using original cluster press method")
     }
 
     // //////////////////////////////////////////////////////////////////////////////////
@@ -157,7 +160,7 @@ export default class ClusteredMapView extends PureComponent {
                 onPress={this.onClusterPress}
                 textStyle={this.props.textStyle}
                 scaleUpRatio={this.props.scaleUpRatio}
-                renderMarker={this.props.renderMarker}
+                renderCluster={this.props.renderCluster}
                 key={`cluster-${d.properties.cluster_id}`}
                 containerStyle={this.props.containerStyle}
                 clusterInitialFontSize={this.props.clusterInitialFontSize}
@@ -207,6 +210,7 @@ ClusteredMapView.propTypes = {
   onExplode: PropTypes.func,
   onImplode: PropTypes.func,
   scaleUpRatio: PropTypes.func,
+  renderCluster: PropTypes.func,
   onClusterPress: PropTypes.func,
   renderMarker: PropTypes.func.isRequired,
   // bool
