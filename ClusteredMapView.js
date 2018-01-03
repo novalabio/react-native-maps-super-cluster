@@ -159,6 +159,8 @@ ClusteredMapView.defaultProps = {
   minZoom: 1,
   maxZoom: 20,
   extent: 512,
+  textStyle: {},
+  containerStyle: {},
   animateClusters: true,
   clusteringEnabled: true,
   clusterInitialFontSize: 12,
@@ -167,8 +169,6 @@ ClusteredMapView.defaultProps = {
   preserveClusterPressBehavior: true,
   width: Dimensions.get('window').width,
   height: Dimensions.get('window').height,
-  textStyle: {},
-  containerStyle: {},
   edgePadding: { top: 10, left: 10, right: 10, bottom: 10 }
 }
 
