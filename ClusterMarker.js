@@ -24,14 +24,16 @@ export default class ClusterMarker extends Component {
           longitude = this.props.geometry.coordinates[0]
 
     if (this.props.renderCluster) {
-
       const cluster = {
         pointCount,
-        coordinates: { latitude, longitude },
+        coordinate: { latitude, longitude },
         clusterId: this.props.properties.cluster_id,
       }
       return this.props.renderCluster(cluster, this.onPress)
     }
+
+    // keep default marker for backward compatibility, but it'll soon be deprecated
+    console.warn('Deprecation notice: default markers will soon be deprecated. Please, start using "renderCluster" prop.') // eslint-disable-line
 
     let scaleUpRatio = this.props.scaleUpRatio ? this.props.scaleUpRatio(pointCount) : (1 + (Math.min(pointCount, 999) / 100))
     if (isNaN(scaleUpRatio)) {
