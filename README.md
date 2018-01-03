@@ -127,8 +127,8 @@ containerStyle | Object | false | NovaLab Brand colors | Style of the clusters `
 ## Methods
 **Name** | **Params** | **Description** | **Note**
 ---------|------------|-----------------|---------
-getMapRef | none | Getter for underlying react-native-maps instance
-getClusteringEngine | none | Getter for underlying SuperCluster instance
+getMapRef | none | Getter for underlying react-native-maps instance | [Official Doc](https://github.com/react-community/react-native-maps#component-api)
+getClusteringEngine | none | Getter for underlying SuperCluster instance | [Official Doc](https://github.com/mapbox/supercluster)
 
 ## Production usage
 If you are using this module in a production application, please submit a PR or contact us to add it here.
