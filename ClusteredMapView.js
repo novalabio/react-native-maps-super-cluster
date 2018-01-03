@@ -167,6 +167,8 @@ ClusteredMapView.defaultProps = {
   preserveClusterPressBehavior: true,
   width: Dimensions.get('window').width,
   height: Dimensions.get('window').height,
+  textStyle: {},
+  containerStyle: {},
   edgePadding: { top: 10, left: 10, right: 10, bottom: 10 }
 }
 
@@ -196,8 +198,8 @@ ClusteredMapView.propTypes = {
   clusteringEnabled: PropTypes.bool.isRequired,
   preserveClusterPressBehavior: PropTypes.bool.isRequired,
   // object
-  textStyle: PropTypes.object.isRequired,
+  textStyle: PropTypes.object,
   edgePadding: PropTypes.object.isRequired,
-  containerStyle: PropTypes.object.isRequired,
+  containerStyle: PropTypes.object,
   // string
 }
