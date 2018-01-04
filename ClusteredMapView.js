@@ -17,7 +17,6 @@ import ClusterMarker from './ClusterMarker'
 // libs / utils
 import {
   regionToBoundingBox,
-  boundingBoxToRegion,
   itemToGeoJSONFeature
 } from './util'
 
@@ -58,7 +57,9 @@ export default class ClusteredMapView extends PureComponent {
                     && LayoutAnimation.configureNext(LayoutAnimation.Presets.spring)
   }
 
-  mapRef = (ref) => this.mapview = ref
+  mapRef = (ref) => {
+    this.mapview = ref
+  }
 
   getMapRef = () => this.mapview
 
@@ -107,10 +108,6 @@ export default class ClusteredMapView extends PureComponent {
       return
     }
 
-    if (this.props.onClusterPress) {
-        console.warn("you can't preserve the original cluster press behaviour and perform a custom onClusterPress function, using original cluster press method")
-    }
-
     // //////////////////////////////////////////////////////////////////////////////////
     // NEW IMPLEMENTATION (with fitToCoordinates)
     // //////////////////////////////////////////////////////////////////////////////////
@@ -118,29 +115,10 @@ export default class ClusteredMapView extends PureComponent {
     const children = this.index.getLeaves(cluster.properties.cluster_id, this.props.clusterPressMaxChildren),
           markers = children.map(c => c.properties.item)
 
-    // fit right around them, keeping edge padding into account
+    // fit right around them, considering edge padding
     this.mapview.fitToCoordinates(markers.map(m => m.location), { edgePadding: this.props.edgePadding })
 
     this.props.onClusterPress && this.props.onClusterPress(cluster.properties.cluster_id, markers)
-
-    // //////////////////////////////////////////////////////////////////////////////////
-    // OLD, LESS ACCURATE, IMPLEMENTATION (with animateToRegion)
-    // //////////////////////////////////////////////////////////////////////////////////
-    // let ne = { latitude: 0, longitude: 0 },
-    //     sw = { latitude: 1000, longitude: 1000 }
-
-    // children.forEach(c => {
-    //   const location = c.properties.item.location
-
-    //   ne.latitude = Math.max(ne.latitude, location.latitude)
-    //   ne.longitude = Math.max(ne.longitude, location.longitude)
-
-    //   sw.latitude = Math.min(sw.latitude, location.latitude)
-    //   sw.longitude = Math.min(sw.longitude, location.longitude)
-    // })
-
-    // this.mapview.animateToRegion(boundingBoxToRegion({ ne, sw }))
-    // this.props.onClusterPress && this.props.onClusterPress(cluster.properties.cluster_id, children)
   }
 
   render() {
@@ -181,6 +159,8 @@ ClusteredMapView.defaultProps = {
   minZoom: 1,
   maxZoom: 20,
   extent: 512,
+  textStyle: {},
+  containerStyle: {},
   animateClusters: true,
   clusteringEnabled: true,
   clusterInitialFontSize: 12,
@@ -218,8 +198,8 @@ ClusteredMapView.propTypes = {
   clusteringEnabled: PropTypes.bool.isRequired,
   preserveClusterPressBehavior: PropTypes.bool.isRequired,
   // object
-  textStyle: PropTypes.object.isRequired,
+  textStyle: PropTypes.object,
   edgePadding: PropTypes.object.isRequired,
-  containerStyle: PropTypes.object.isRequired,
+  containerStyle: PropTypes.object,
   // string
 }

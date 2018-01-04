@@ -24,7 +24,7 @@ This module wants to provide a stable and performing solution for maps clusterin
 
 ```JSX
 import React, { Component } from 'react'
-import { Marker } from 'react-native-maps'
+import { Marker, Callout } from 'react-native-maps'
 import ClusteredMapView from 'react-native-maps-super-cluster'
 
 const INIT_REGION = {
@@ -38,6 +38,48 @@ export default class MyClusteredMapView extends Component {
   
   ...
 
+  renderCluster = (cluster, onPress) => {
+    const pointCount = cluster.pointCount,
+          coordinate = cluster.coordinate,
+          clusterId = cluster.clusterId
+
+    // use pointCount to calculate cluster size scaling
+    // and apply it to "style" prop below
+
+    // eventually get clustered points by using
+    // underlying SuperCluster instance
+    // Methods ref: https://github.com/mapbox/supercluster
+    const clusteringEngine = this.map.getClusteringEngine(),
+          clusteredPoints = clusteringEngine.getLeaves(clusterId, 100)
+
+    return (
+      <Marker coordinate={coordinate} onPress={onPress}>
+        <View style={styles.myClusterStyle}>
+          <Text style={styles.myClusterTextStyle}>
+            {pointCount}
+          </Text>
+        </View>
+        {
+          /*
+            Eventually use <Callout /> to
+            show clustered point thumbs, i.e.:
+            <Callout>
+              <ScrollView>
+                {
+                  clusteredPoints.map(p => (
+                    <Image source={p.image}>
+                  ))
+                }
+              </ScrollView>
+            </Callout>
+
+            IMPORTANT: be aware that Marker's onPress event isn't really consistent when using Callout.
+           */
+        }
+      </Marker>
+    )
+  }
+
   renderMarker = (data) => <Marker key={data.id || Math.random()} coordinate={data.location} />
 
   ...
@@ -48,11 +90,9 @@ export default class MyClusteredMapView extends Component {
         style={{flex: 1}}
         data={this.state.data}
         initialRegion={INIT_REGION}
+        ref={(r) => { this.map = r }}
         renderMarker={this.renderMarker}
-        {/* cluster text */}
-        textStyle={{ color: '#65bc46' }}
-        {/* cluster container */}
-        containerStyle={{backgroundColor: 'white', borderColor: '#65bc46'}} />
+        renderCluster={this.renderCluster} />
     )
   }
 }
@@ -68,9 +108,6 @@ minZoom | Number | false | 1 | [SuperCluster minZoom](https://github.com/mapbox/
 maxZoom | Number | false | 20 | [SuperCluster maxZoom](https://github.com/mapbox/supercluster#options).
 width | Number | false | window width | map's width.
 height | Number | false | window height | map's height.
-scaleUpRatio(markersCount: Number); | Function | false | undefined | Must return a number, used to multiply clusters and font sizes based on `markersCount`.
-clusterInitialFontSize | Number | false | 12 | font base size for cluster counter. Scales up proportionally to clustered markers.
-clusterInitialDimension | Number | false | 30 | cluster view base dimension in dpi/ppi. Scales up proportionally to clustered markers.
 data | Array <Object> | true | undefined | Objects must have an attribute `location` representing a `GeoPoint`, i.e. `{ latitude: x, longitude: y }`.
 onExplode | Function | false | undefined | TODO
 onImplode | Function | false | undefined | TODO
@@ -81,14 +118,17 @@ edgePadding | Object | false | { top: 10, left: 10, bottom: 10, right: 10 } | Ed
 renderMarker | Function | false | undefined | Must return a react-native-maps' Marker component.
 animateClusters | Bool | false | true | Animate imploding/exploding of clusters' markers and clusters size change. **Works only on iOS**.
 clusteringEnabled | Bool | false | true | Dynamically set whether to pass through clustering functions or immediately render markers as a normal mapview.
-textStyle | Object | false | NovaLab Brand colors | Style of the `Text` component used for clusters counters.
-containerStyle | Object | false | NovaLab Brand colors | Style of the clusters `View`.
+scaleUpRatio(markersCount: Number); | Function | false | undefined | Must return a number, used to multiply clusters and font sizes based on `markersCount`. **Deprecated**, use `renderCluster` instead.
+clusterInitialFontSize | Number | false | 12 | font base size for cluster counter. Scales up proportionally to clustered markers. **Deprecated**, use `renderCluster` instead.
+clusterInitialDimension | Number | false | 30 | cluster view base dimension in dpi/ppi. Scales up proportionally to clustered markers. **Deprecated**, use `renderCluster` instead.
+textStyle | Object | false | NovaLab Brand colors | Style of the `Text` component used for clusters counters. **Deprecated**, use `renderCluster` instead.
+containerStyle | Object | false | NovaLab Brand colors | Style of the clusters `View`. **Deprecated**, use `renderCluster` instead.
 
 ## Methods
 **Name** | **Params** | **Description** | **Note**
 ---------|------------|-----------------|---------
-getMapRef | none | Getter for underlying react-native-maps instance
-getClusteringEngine | none | Getter for underlying SuperCluster instance
+getMapRef | none | Getter for underlying react-native-maps instance | [Official Doc](https://github.com/react-community/react-native-maps#component-api)
+getClusteringEngine | none | Getter for underlying SuperCluster instance | [Official Doc](https://github.com/mapbox/supercluster)
 
 ## Production usage
 If you are using this module in a production application, please submit a PR or contact us to add it here.
