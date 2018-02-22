@@ -24,22 +24,22 @@ export const regionToBoundingBox = (region) => ([
  */
 export const boundingBoxToRegion = (bbox) => {
   const minLon = bbox.ws.longitude * Math.PI / 180,
-    maxLon = bbox.en.longitude * Math.PI / 180
+      maxLon = bbox.en.longitude * Math.PI / 180
 
   const minLat = bbox.ws.latitude * Math.PI / 180,
-    maxLat = bbox.en.latitude * Math.PI / 180
+      maxLat = bbox.en.latitude * Math.PI / 180
 
   const dLon = maxLon - minLon,
-    dLat = maxLat - minLat
+      dLat = maxLat - minLat
 
   const x = Math.cos(maxLat) * Math.cos(dLon),
-    y = Math.cos(maxLat) * Math.sin(dLon)
+      y = Math.cos(maxLat) * Math.sin(dLon)
 
   const latRad = Math.atan2(Math.sin(minLat) + Math.sin(maxLat), Math.sqrt((Math.cos(minLat) + x) * (Math.cos(minLat) + x) + y * y )),
-    lonRad = minLon + Math.atan2(y, Math.cos(minLat) + x)
+      lonRad = minLon + Math.atan2(y, Math.cos(minLat) + x)
 
   const latitude = latRad * 180 / Math.PI,
-    longitude = lonRad * 180 / Math.PI
+      longitude = lonRad * 180 / Math.PI
 
   return {
     latitude,
