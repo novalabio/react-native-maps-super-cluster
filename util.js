@@ -6,17 +6,19 @@
  * @returns {Object} - Region's bounding box as WSEN array
  */
 export const regionToBoundingBox = (region) => {
-      let lngD;
-      if(region.longitudeDelta < 0)
-          lngD = region.longitudeDelta + 360
-      else
-          lngD = region.longitudeDelta;     
-      return([
-      region.longitude - lngD, // westLng - min lng
-      region.latitude - region.latitudeDelta, // southLat - min lat
-      region.longitude + lngD, // eastLng - max lng
-      region.latitude + region.latitudeDelta // northLat - max lat
-    ])}
+  let lngD
+  if (region.longitudeDelta < 0)
+    lngD = region.longitudeDelta + 360
+  else
+    lngD = region.longitudeDelta
+
+  return ([
+    region.longitude - lngD, // westLng - min lng
+    region.latitude - region.latitudeDelta, // southLat - min lat
+    region.longitude + lngD, // eastLng - max lng
+    region.latitude + region.latitudeDelta // northLat - max lat
+  ])
+}
 
 /**
  * Calculate region from the given bounding box.
