@@ -21,6 +21,7 @@ This module wants to provide a stable and performing solution for maps clusterin
 
 * the prop `key` of the markers rendered through `renderMarker` should not be left up to React. Instead, we strongly suggest to use an `id` in order the have unique keys while still taking advantage of React's recycling
 * `ClusteredMapView` supports usual React children. Those children **won't be affected by clustering**, i.e. the behavior for those children is exactly the same as wrapping them around an [AirBnB's react-native-maps](https://github.com/airbnb/react-native-maps) instance
+* Use `onMarkerPress` event on MapView instead of using `onPress` directly on Markers whenever possibile, in particular if you have a lot of pins and clusters. Within `onMarkerPress` you have access to the marker identifier through the `event.nativeEvent` attribute, hence you should be able to do everything you would do within an `onPress` function of a Marker
 
 ```JSX
 import React, { Component } from 'react'
