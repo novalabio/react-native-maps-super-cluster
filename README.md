@@ -133,8 +133,10 @@ getClusteringEngine | none | Getter for underlying SuperCluster instance | [Offi
 
 ## Production usage
 If you are using this module in a production application, please submit a PR or contact us to add it here.
-* [Varee on Goole Play](https://play.google.com/store/apps/details?id=com.vareemobile)
+* [Varee on Google Play](https://play.google.com/store/apps/details?id=com.vareemobile)
 * [Varee on App Store](https://itunes.apple.com/us/app/varee/id1330151010?mt=8)
+* [Our Voice USA on Google Play](https://play.google.com/store/apps/details?id=org.ourvoiceinitiative.ourvoice)
+* [Our Voice USA on App Store](https://itunes.apple.com/us/app/our-voice-usa/id1275301651?ls=1&mt=8)
 
 ## TODO
 
