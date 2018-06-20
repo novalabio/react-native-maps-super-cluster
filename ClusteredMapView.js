@@ -85,6 +85,9 @@ export default class ClusteredMapView extends PureComponent {
     let data
     if (region.longitudeDelta <= 80) {
       data = this.getClusters(region)
+      data.forEach((item) => {
+      item.zoom = region.zoom;
+      })
       this.setState({ region, data })
     }
     this.props.onRegionChangeComplete && this.props.onRegionChangeComplete(region, data)
@@ -136,7 +139,7 @@ export default class ClusteredMapView extends PureComponent {
                 textStyle={this.props.textStyle}
                 scaleUpRatio={this.props.scaleUpRatio}
                 renderCluster={this.props.renderCluster}
-                key={`cluster-${d.properties.cluster_id}`}
+                key={`cluster-${d.zoom}-${d.properties.cluster_id}`}
                 containerStyle={this.props.containerStyle}
                 clusterInitialFontSize={this.props.clusterInitialFontSize}
                 clusterInitialDimension={this.props.clusterInitialDimension} />
