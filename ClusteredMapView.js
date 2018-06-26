@@ -36,8 +36,11 @@ export default class ClusteredMapView extends PureComponent {
     this.mapRef = this.mapRef.bind(this)
     this.onClusterPress = this.onClusterPress.bind(this)
     this.onRegionChangeComplete = this.onRegionChangeComplete.bind(this)
+    this.onMapReady = this.onMapReady.bind(this)
   }
-
+    onMapReady(){
+    return this.props.getBaseRef(this.mapview);
+    }
   componentDidMount() {
     this.clusterize(this.props.data)
   }
@@ -126,6 +129,7 @@ export default class ClusteredMapView extends PureComponent {
       <MapView
         { ...this.props}
         ref={this.mapRef}
+        onMapReady={this.onMapReady}
         onRegionChangeComplete={this.onRegionChangeComplete}>
         {
           this.props.clusteringEnabled && this.state.data.map((d) => {
@@ -187,6 +191,7 @@ ClusteredMapView.propTypes = {
   // array
   data: PropTypes.array.isRequired,
   // func
+  getBaseRef:PropTypes.func,
   onExplode: PropTypes.func,
   onImplode: PropTypes.func,
   scaleUpRatio: PropTypes.func,
