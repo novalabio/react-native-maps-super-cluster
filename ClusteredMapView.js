@@ -85,9 +85,12 @@ export default class ClusteredMapView extends PureComponent {
     let data
     if (region.longitudeDelta <= 80) {
       data = this.getClusters(region)
-      this.setState({ region, data })
+      this.setState({ region, data }, () => {
+        this.props.onRegionChangeComplete && this.props.onRegionChangeComplete(region, data)
+      })
+    } else {
+      this.props.onRegionChangeComplete && this.props.onRegionChangeComplete(region, data)
     }
-    this.props.onRegionChangeComplete && this.props.onRegionChangeComplete(region, data)
   }
 
   getClusters = (region) => {
