@@ -138,12 +138,17 @@ If you are using this module in a production application, please submit a PR or 
 * [Varee on App Store](https://itunes.apple.com/us/app/varee/id1330151010?mt=8)
 * [Our Voice USA on Google Play](https://play.google.com/store/apps/details?id=org.ourvoiceinitiative.ourvoice)
 * [Our Voice USA on App Store](https://itunes.apple.com/us/app/our-voice-usa/id1275301651?ls=1&mt=8)
+* [Metropolíque on Google Play](https://play.google.com/store/apps/details?id=com.metropolique.app)
+* [Metropolíque on App Store](https://itunes.apple.com/us/app/metropolique/id1314473652?ls=1&mt=8)
 
 ## TODO
 
 #### features
 * improve `scaleUpRatio` math for fontSize
 * trigger events on cluster implode/explode
+
+# Support
+As an open source project, we provide free support over Github. However, our daily job may increase response time to days or even weeks. If you need dedicated support, feel free to [contact us](mailto:info@novalab.io) for a quote.
 
 # Contributors
 
