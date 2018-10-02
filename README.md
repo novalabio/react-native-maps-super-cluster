@@ -118,6 +118,7 @@ clusterPressMaxChildren | Function | false | 100 | Max number of cluster leaves 
 edgePadding | Object | false | { top: 10, left: 10, bottom: 10, right: 10 } | Edge padding for [react-native-maps's](https://github.com/react-community/react-native-maps/blob/master/docs/mapview.md#methods) `fitToCoordinates` method, called in `onClusterPress` for fitting to pressed cluster children.
 renderMarker | Function | false | undefined | Must return a react-native-maps' Marker component.
 animateClusters | Bool | false | true | Animate imploding/exploding of clusters' markers and clusters size change. **Works only on iOS**.
+layoutAnimationConf | LayoutAnimationConfig | false | `LayoutAnimation.Presets.spring` | Custom Layout animation configuration object for clusters animation during implode / explode **Works only on iOS**.
 clusteringEnabled | Bool | false | true | Dynamically set whether to pass through clustering functions or immediately render markers as a normal mapview.
 scaleUpRatio(markersCount: Number); | Function | false | undefined | Must return a number, used to multiply clusters and font sizes based on `markersCount`. **Deprecated**, use `renderCluster` instead.
 clusterInitialFontSize | Number | false | 12 | font base size for cluster counter. Scales up proportionally to clustered markers. **Deprecated**, use `renderCluster` instead.

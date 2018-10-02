@@ -48,9 +48,8 @@ export default class ClusteredMapView extends PureComponent {
   }
 
   componentWillUpdate(nextProps, nextState) {
-    !this.isAndroid && this.props.animateClusters
-                    && this.clustersChanged(nextState)
-                    && LayoutAnimation.configureNext(LayoutAnimation.Presets.spring)
+    if (!this.isAndroid && this.props.animateClusters && this.clustersChanged(nextState))
+      LayoutAnimation.configureNext(this.props.layoutAnimationConf)
   }
 
   mapRef = (ref) => {
@@ -169,6 +168,7 @@ ClusteredMapView.defaultProps = {
   preserveClusterPressBehavior: true,
   width: Dimensions.get('window').width,
   height: Dimensions.get('window').height,
+  layoutAnimationConf: LayoutAnimation.Presets.spring,
   edgePadding: { top: 10, left: 10, right: 10, bottom: 10 }
 }
 
@@ -199,7 +199,8 @@ ClusteredMapView.propTypes = {
   preserveClusterPressBehavior: PropTypes.bool.isRequired,
   // object
   textStyle: PropTypes.object,
-  edgePadding: PropTypes.object.isRequired,
   containerStyle: PropTypes.object,
+  layoutAnimationConf: PropTypes.object,
+  edgePadding: PropTypes.object.isRequired,
   // string
 }
