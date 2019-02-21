@@ -52,16 +52,20 @@ export default class ClusteredMapView extends PureComponent {
       LayoutAnimation.configureNext(this.props.layoutAnimationConf)
   }
 
-  mapRef = (ref) => {
+  mapRef(ref) {
     this.mapview = ref
   }
 
-  getMapRef = () => this.mapview
+  getMapRef() {
+    this.mapview
+  }
 
-  getClusteringEngine = () => this.index
+  getClusteringEngine() {
+    this.index
+  }
 
-  clusterize = (dataset) => {
-    this.index = SuperCluster({ // eslint-disable-line new-cap
+  clusterize(dataset) {
+    this.index = new SuperCluster({ // eslint-disable-line new-cap
       extent: this.props.extent,
       minZoom: this.props.minZoom,
       maxZoom: this.props.maxZoom,
@@ -78,23 +82,25 @@ export default class ClusteredMapView extends PureComponent {
     this.setState({ data })
   }
 
-  clustersChanged = (nextState) => this.state.data.length !== nextState.data.length
+  clustersChanged(nextState) {
+    return this.state.data.length !== nextState.data.length
+  }
 
-  onRegionChangeComplete = (region) => {
+  onRegionChangeComplete(region) {
     let data = this.getClusters(region);
     this.setState({ region, data }, () => {
         this.props.onRegionChangeComplete && this.props.onRegionChangeComplete(region, data)
     })
   }
 
-  getClusters = (region) => {
+  getClusters(region) {
     const bbox = regionToBoundingBox(region),
           viewport = (region.longitudeDelta) >= 40 ? { zoom: this.props.minZoom } : GeoViewport.viewport(bbox, this.dimensions)
 
     return this.index.getClusters(bbox, viewport.zoom)
   }
 
-  onClusterPress = (cluster) => {
+  onClusterPress(cluster) {
 
     // cluster press behavior might be extremely custom.
     if (!this.props.preserveClusterPressBehavior) {
