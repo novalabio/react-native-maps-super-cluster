@@ -73,7 +73,7 @@ export default class ClusteredMapView extends PureComponent {
     })
 
     // get formatted GeoPoints for cluster
-    const rawData = dataset.map(itemToGeoJSONFeature)
+    const rawData = dataset.map(item => itemToGeoJSONFeature(item, this.props.accessor))
 
     // load geopoints into SuperCluster
     this.index.load(rawData)
@@ -157,6 +157,7 @@ ClusteredMapView.defaultProps = {
   minZoom: 1,
   maxZoom: 16,
   extent: 512,
+  accessor: 'location',
   animateClusters: true,
   clusteringEnabled: true,
   clusterPressMaxChildren: 100,
@@ -193,4 +194,6 @@ ClusteredMapView.propTypes = {
   layoutAnimationConf: PropTypes.object,
   edgePadding: PropTypes.object.isRequired,
   // string
+  // mutiple
+  accessor: PropTypes.oneOf([PropTypes.string, PropTypes.func])
 }

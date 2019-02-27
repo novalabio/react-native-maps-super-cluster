@@ -120,11 +120,7 @@ renderMarker | Function | false | undefined | Must return a react-native-maps' M
 animateClusters | Bool | false | true | Animate imploding/exploding of clusters' markers and clusters size change. **Works only on iOS**.
 layoutAnimationConf | LayoutAnimationConfig | false | `LayoutAnimation.Presets.spring` | Custom Layout animation configuration object for clusters animation during implode / explode **Works only on iOS**.
 clusteringEnabled | Bool | false | true | Dynamically set whether to pass through clustering functions or immediately render markers as a normal mapview.
-scaleUpRatio(markersCount: Number); | Function | false | undefined | Must return a number, used to multiply clusters and font sizes based on `markersCount`. **Deprecated**, use `renderCluster` instead.
-clusterInitialFontSize | Number | false | 12 | font base size for cluster counter. Scales up proportionally to clustered markers. **Deprecated**, use `renderCluster` instead.
-clusterInitialDimension | Number | false | 30 | cluster view base dimension in dpi/ppi. Scales up proportionally to clustered markers. **Deprecated**, use `renderCluster` instead.
-textStyle | Object | false | NovaLab Brand colors | Style of the `Text` component used for clusters counters. **Deprecated**, use `renderCluster` instead.
-containerStyle | Object | false | NovaLab Brand colors | Style of the clusters `View`. **Deprecated**, use `renderCluster` instead.
+accessor | String\|Func | true | "location" | Accessor for item coordinate values. Could be a **string** (field name of an item object with latitude and longitude values) or a **function** (that describes how to access to coordinate data).
 
 ## Methods
 **Name** | **Params** | **Description** | **Note**

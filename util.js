@@ -43,7 +43,7 @@ export const boundingBoxToRegion = (bbox) => {
   const x = Math.cos(maxLat) * Math.cos(dLon),
         y = Math.cos(maxLat) * Math.sin(dLon)
 
-  const latRad = Math.atan2(Math.sin(minLat) + Math.sin(maxLat), Math.sqrt((Math.cos(minLat) + x) * (Math.cos(minLat) + x) + y * y )),
+  const latRad = Math.atan2(Math.sin(minLat) + Math.sin(maxLat), Math.sqrt((Math.cos(minLat) + x) * (Math.cos(minLat) + x) + y * y)),
         lonRad = minLon + Math.atan2(y, Math.cos(minLat) + x)
 
   const latitude = latRad * 180 / Math.PI,
@@ -62,13 +62,24 @@ export const boundingBoxToRegion = (bbox) => {
  * from the given JS object
  * RFC7946: https://tools.ietf.org/html/rfc7946#section-3.2
  * @param {Object} item - JS object containing marker data
+ * @param {Function|String} accessor - accessor for item coordinate values. Could be a string (field name) or a function (that describe how to access to coordinate data).
  * @returns {Object} - GeoJSON Feature object
  */
-export const itemToGeoJSONFeature = (item) => ({
-  type: 'Feature',
-  geometry: {
-    type: 'Point',
-    coordinates: [item.location.longitude, item.location.latitude]
-  },
-  properties: { point_count: 0, item } // eslint-disable-line camelcase
-})
+export const itemToGeoJSONFeature = (item, accessor) => {
+  let coordinates = []
+
+  if (typeof accessor === 'string') {
+    coordinates = [item[accessor].longitude, item[accessor].latitude]
+  } else if (typeof accessor === 'function') {
+    coordinates = accessor(item)
+  }
+
+  return {
+    type: 'Feature',
+    geometry: {
+      coordinates,
+      type: 'Point',
+    },
+    properties: { point_count: 0, item } // eslint-disable-line camelcase
+  }
+}
