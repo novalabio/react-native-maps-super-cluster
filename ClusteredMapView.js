@@ -195,5 +195,5 @@ ClusteredMapView.propTypes = {
   edgePadding: PropTypes.object.isRequired,
   // string
   // mutiple
-  accessor: PropTypes.oneOf([PropTypes.string, PropTypes.func])
+  accessor: PropTypes.oneOfType([PropTypes.string, PropTypes.func])
 }
