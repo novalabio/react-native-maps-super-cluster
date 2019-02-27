@@ -122,9 +122,12 @@ export default class ClusteredMapView extends PureComponent {
   }
 
   render() {
+    const { style, ...props } = this.props
+
     return (
       <MapView
-        { ...this.props}
+        {...props}
+        style={style}
         ref={this.mapRef}
         onRegionChangeComplete={this.onRegionChangeComplete}>
         {
@@ -157,7 +160,7 @@ export default class ClusteredMapView extends PureComponent {
 
 ClusteredMapView.defaultProps = {
   minZoom: 1,
-  maxZoom: 20,
+  maxZoom: 16,
   extent: 512,
   textStyle: {},
   containerStyle: {},
