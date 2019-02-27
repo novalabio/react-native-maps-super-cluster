@@ -106,7 +106,7 @@ export default class MyClusteredMapView extends Component {
 radius | Number | false | window width * 4,5% | [SuperCluster radius](https://github.com/mapbox/supercluster#options).
 extent | Number | false | 512 | [SuperCluster extent](https://github.com/mapbox/supercluster#options).
 minZoom | Number | false | 1 | [SuperCluster minZoom](https://github.com/mapbox/supercluster#options).
-maxZoom | Number | false | 20 | [SuperCluster maxZoom](https://github.com/mapbox/supercluster#options).
+maxZoom | Number | false | 16 | [SuperCluster maxZoom](https://github.com/mapbox/supercluster#options).
 width | Number | false | window width | map's width.
 height | Number | false | window height | map's height.
 data | Array <Object> | true | undefined | Objects must have an attribute `location` representing a `GeoPoint`, i.e. `{ latitude: x, longitude: y }`.
