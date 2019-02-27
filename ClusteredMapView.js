@@ -87,7 +87,7 @@ export default class ClusteredMapView extends PureComponent {
   }
 
   onRegionChangeComplete(region) {
-    let data = this.getClusters(region);
+    let data = this.getClusters(region)
     this.setState({ region, data }, () => {
         this.props.onRegionChangeComplete && this.props.onRegionChangeComplete(region, data)
     })
@@ -139,13 +139,8 @@ export default class ClusteredMapView extends PureComponent {
               <ClusterMarker
                 {...d}
                 onPress={this.onClusterPress}
-                textStyle={this.props.textStyle}
-                scaleUpRatio={this.props.scaleUpRatio}
                 renderCluster={this.props.renderCluster}
-                key={`cluster-${d.properties.cluster_id}`}
-                containerStyle={this.props.containerStyle}
-                clusterInitialFontSize={this.props.clusterInitialFontSize}
-                clusterInitialDimension={this.props.clusterInitialDimension} />
+                key={`cluster-${d.properties.cluster_id}`} />
             )
           })
         }
@@ -162,12 +157,8 @@ ClusteredMapView.defaultProps = {
   minZoom: 1,
   maxZoom: 16,
   extent: 512,
-  textStyle: {},
-  containerStyle: {},
   animateClusters: true,
   clusteringEnabled: true,
-  clusterInitialFontSize: 12,
-  clusterInitialDimension: 30,
   clusterPressMaxChildren: 100,
   preserveClusterPressBehavior: true,
   width: Dimensions.get('window').width,
@@ -185,25 +176,20 @@ ClusteredMapView.propTypes = {
   extent: PropTypes.number.isRequired,
   minZoom: PropTypes.number.isRequired,
   maxZoom: PropTypes.number.isRequired,
-  clusterInitialFontSize: PropTypes.number.isRequired,
   clusterPressMaxChildren: PropTypes.number.isRequired,
-  clusterInitialDimension: PropTypes.number.isRequired,
   // array
   data: PropTypes.array.isRequired,
   // func
   onExplode: PropTypes.func,
   onImplode: PropTypes.func,
-  scaleUpRatio: PropTypes.func,
-  renderCluster: PropTypes.func,
   onClusterPress: PropTypes.func,
   renderMarker: PropTypes.func.isRequired,
+  renderCluster: PropTypes.func.isRequired,
   // bool
   animateClusters: PropTypes.bool.isRequired,
   clusteringEnabled: PropTypes.bool.isRequired,
   preserveClusterPressBehavior: PropTypes.bool.isRequired,
   // object
-  textStyle: PropTypes.object,
-  containerStyle: PropTypes.object,
   layoutAnimationConf: PropTypes.object,
   edgePadding: PropTypes.object.isRequired,
   // string
