@@ -57,11 +57,11 @@ export default class ClusteredMapView extends PureComponent {
   }
 
   getMapRef() {
-    this.mapview
+    return this.mapview
   }
 
   getClusteringEngine() {
-    this.index
+    return this.index
   }
 
   clusterize(dataset) {
