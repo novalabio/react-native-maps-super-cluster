@@ -17,7 +17,9 @@ import ClusterMarker from './ClusterMarker'
 // libs / utils
 import {
   regionToBoundingBox,
-  itemToGeoJSONFeature
+  itemToGeoJSONFeature,
+  ensureLongitude,
+  deg2rad
 } from './util'
 
 export default class ClusteredMapView extends PureComponent {
@@ -97,6 +99,15 @@ export default class ClusteredMapView extends PureComponent {
     const bbox = regionToBoundingBox(region),
           viewport = (region.longitudeDelta) >= 40 ? { zoom: this.props.minZoom } : GeoViewport.viewport(bbox, this.dimensions)
 
+    if (this.props.kmBboxWiden) {
+      const latExtend = this.props.kmBboxWiden / 110.574;
+      const lonExtend = 111.32 * Math.cos(deg2rad(region.latitude));
+      bbox[0] = ensureLongitude(bbox[0] - lonExtend);
+      bbox[1] -= latExtend;
+      bbox[2] += ensureLongitude(bbox[0] + lonExtend);
+      bbox[3] += latExtend;
+    }
+
     return this.index.getClusters(bbox, viewport.zoom)
   }
 
@@ -157,6 +168,7 @@ ClusteredMapView.defaultProps = {
   minZoom: 1,
   maxZoom: 16,
   extent: 512,
+  kmBboxWiden: 0,
   accessor: 'location',
   animateClusters: true,
   clusteringEnabled: true,
@@ -178,6 +190,7 @@ ClusteredMapView.propTypes = {
   minZoom: PropTypes.number.isRequired,
   maxZoom: PropTypes.number.isRequired,
   clusterPressMaxChildren: PropTypes.number.isRequired,
+  kmBboxWiden: PropTypes.number.isRequired,
   // array
   data: PropTypes.array.isRequired,
   // func

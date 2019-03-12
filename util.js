@@ -83,3 +83,17 @@ export const itemToGeoJSONFeature = (item, accessor) => {
     properties: { point_count: 0, item } // eslint-disable-line camelcase
   }
 }
+
+/**
+ * "Modulus" for longitude
+ */
+export const ensureLongitude = longitude => {
+  if (longitude > 180.0) {
+      return (longitude -= 360.0);
+  } else if (longitude <= -180.0) {
+      return (longitude += 360.0);
+  }
+  return longitude;
+};
+
+export const deg2rad = deg => (deg * Math.PI) / 180;
