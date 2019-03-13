@@ -65,6 +65,32 @@ export default class ClusteredMapView extends PureComponent {
   getClusteringEngine() {
     return this.index
   }
+  
+  clustersComparator = ({
+      geometry: { coordinates: c1 },
+      properties: { point_count: pc1 }
+  }) => ({
+      geometry: { coordinates: c2 },
+      properties: { point_count: pc2 }
+  }) => {
+      return (
+          pc1 === pc2 &&
+          Math.abs(c1[0] - c2[0]) < Number.EPSILON &&
+          Math.abs(c1[1] - c2[1]) < Number.EPSILON
+      );
+  };
+
+  preserveUnchangedClusterIds(data) {
+    const prevClusters = this.state.data.filter(d => d.properties.cluster);
+    data.filter(d => d.properties.cluster).forEach(cluster => {
+        const comparator = this.clustersComparator(cluster);
+        const item = prevClusters.find(comparator);
+        if (item) {
+            cluster.properties.cluster_id = item.properties.cluster_id;
+        }
+    });
+    return data;
+}
 
   clusterize(dataset) {
     this.index = new SuperCluster({ // eslint-disable-line new-cap
@@ -80,7 +106,7 @@ export default class ClusteredMapView extends PureComponent {
     // load geopoints into SuperCluster
     this.index.load(rawData)
 
-    const data = this.getClusters(this.state.region)
+    const data = this.preserveUnchangedClusterIds(this.getClusters(this.state.region));
     this.setState({ data })
   }
 
@@ -89,7 +115,7 @@ export default class ClusteredMapView extends PureComponent {
   }
 
   onRegionChangeComplete(region) {
-    let data = this.getClusters(region)
+    let data = this.preserveUnchangedClusterIds(this.getClusters(region));
     this.setState({ region, data }, () => {
         this.props.onRegionChangeComplete && this.props.onRegionChangeComplete(region, data)
     })
