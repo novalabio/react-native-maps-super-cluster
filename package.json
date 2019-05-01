@@ -33,7 +33,8 @@
   "homepage": "https://github.com/novalabio/react-native-maps-super-cluster#readme",
   "dependencies": {
     "@mapbox/geo-viewport": "0.4.0",
-    "supercluster": "6.0.0"
+    "supercluster": "6.0.0",
+    "lodash": "^4.17.11"
   },
   "peerDependencies": {
     "prop-types": "15.6.2",
