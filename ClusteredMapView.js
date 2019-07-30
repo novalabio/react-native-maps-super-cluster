@@ -42,14 +42,16 @@ export default class ClusteredMapView extends PureComponent {
     this.clusterize(this.props.data)
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.data !== nextProps.data)
-      this.clusterize(nextProps.data)
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.data !== prevProps.data) {
+      this.clusterize(this.props.data)
+    }
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    if (!this.isAndroid && this.props.animateClusters && this.clustersChanged(nextState))
+  configAnimation() {
+    if (!this.isAndroid && this.props.animateClusters) {
       LayoutAnimation.configureNext(this.props.layoutAnimationConf)
+    }
   }
 
   mapRef(ref) {
@@ -80,17 +82,23 @@ export default class ClusteredMapView extends PureComponent {
 
     const data = this.getClusters(this.state.region)
     this.setState({ data })
+    if (this.clustersChanged(data)) {
+      this.configAnimation();
+    }
   }
 
-  clustersChanged(nextState) {
-    return this.state.data.length !== nextState.data.length
+  clustersChanged(data) {
+    return this.state.data.length !== data.length
   }
 
   onRegionChangeComplete(region) {
     let data = this.getClusters(region)
     this.setState({ region, data }, () => {
-        this.props.onRegionChangeComplete && this.props.onRegionChangeComplete(region, data)
+      this.props.onRegionChangeComplete && this.props.onRegionChangeComplete(region, data)
     })
+    if (this.clustersChanged(data)) {
+      this.configAnimation();
+    }
   }
 
   getClusters(region) {
@@ -141,7 +149,7 @@ export default class ClusteredMapView extends PureComponent {
                 onPress={this.onClusterPress}
                 renderCluster={this.props.renderCluster}
                 key={`cluster-${d.properties.cluster_id}`} />
-            )
+              )
           })
         }
         {
