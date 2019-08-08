@@ -106,7 +106,7 @@ export default class MyClusteredMapView extends Component {
 radius | Number | false | window width * 4,5% | [SuperCluster radius](https://github.com/mapbox/supercluster#options).
 extent | Number | false | 512 | [SuperCluster extent](https://github.com/mapbox/supercluster#options).
 minZoom | Number | false | 1 | [SuperCluster minZoom](https://github.com/mapbox/supercluster#options).
-maxZoom | Number | false | 20 | [SuperCluster maxZoom](https://github.com/mapbox/supercluster#options).
+maxZoom | Number | false | 16 | [SuperCluster maxZoom](https://github.com/mapbox/supercluster#options).
 width | Number | false | window width | map's width.
 height | Number | false | window height | map's height.
 data | Array <Object> | true | undefined | Objects must have an attribute `location` representing a `GeoPoint`, i.e. `{ latitude: x, longitude: y }`.
@@ -118,12 +118,9 @@ clusterPressMaxChildren | Function | false | 100 | Max number of cluster leaves 
 edgePadding | Object | false | { top: 10, left: 10, bottom: 10, right: 10 } | Edge padding for [react-native-maps's](https://github.com/react-community/react-native-maps/blob/master/docs/mapview.md#methods) `fitToCoordinates` method, called in `onClusterPress` for fitting to pressed cluster children.
 renderMarker | Function | false | undefined | Must return a react-native-maps' Marker component.
 animateClusters | Bool | false | true | Animate imploding/exploding of clusters' markers and clusters size change. **Works only on iOS**.
+layoutAnimationConf | LayoutAnimationConfig | false | `LayoutAnimation.Presets.spring` | Custom Layout animation configuration object for clusters animation during implode / explode **Works only on iOS**.
 clusteringEnabled | Bool | false | true | Dynamically set whether to pass through clustering functions or immediately render markers as a normal mapview.
-scaleUpRatio(markersCount: Number); | Function | false | undefined | Must return a number, used to multiply clusters and font sizes based on `markersCount`. **Deprecated**, use `renderCluster` instead.
-clusterInitialFontSize | Number | false | 12 | font base size for cluster counter. Scales up proportionally to clustered markers. **Deprecated**, use `renderCluster` instead.
-clusterInitialDimension | Number | false | 30 | cluster view base dimension in dpi/ppi. Scales up proportionally to clustered markers. **Deprecated**, use `renderCluster` instead.
-textStyle | Object | false | NovaLab Brand colors | Style of the `Text` component used for clusters counters. **Deprecated**, use `renderCluster` instead.
-containerStyle | Object | false | NovaLab Brand colors | Style of the clusters `View`. **Deprecated**, use `renderCluster` instead.
+accessor | String\|Func | true | "location" | Accessor for item coordinate values. Could be a **string** (field name of an item object with latitude and longitude values) or a **function** (that describes how to access to coordinate data).
 
 ## Methods
 **Name** | **Params** | **Description** | **Note**
@@ -137,12 +134,21 @@ If you are using this module in a production application, please submit a PR or 
 * [Varee on App Store](https://itunes.apple.com/us/app/varee/id1330151010?mt=8)
 * [Our Voice USA on Google Play](https://play.google.com/store/apps/details?id=org.ourvoiceinitiative.ourvoice)
 * [Our Voice USA on App Store](https://itunes.apple.com/us/app/our-voice-usa/id1275301651?ls=1&mt=8)
+* [Metropolíque on Google Play](https://play.google.com/store/apps/details?id=com.metropolique.app)
+* [Metropolíque on App Store](https://itunes.apple.com/us/app/metropolique/id1314473652?ls=1&mt=8)
+* [Outside - Post and do tasks! on Google Play](https://play.google.com/store/apps/details?id=com.outsideapp)
+* [Outside - Post and do tasks! on App Store](https://itunes.apple.com/us/app/outside-post-and-do-tasks/id1444603208?ls=1&mt=8)
+* [Luceverde - ACI Infomobilità on Google Play](https://play.google.com/store/apps/details?id=it.aci.luceverde.client.mobileapp)
+* [Luceverde - ACI Infomobilità on App Store](https://itunes.apple.com/it/app/luceverde/id1357722780?l=en&mt=8)
 
 ## TODO
 
 #### features
 * improve `scaleUpRatio` math for fontSize
 * trigger events on cluster implode/explode
+
+# Support
+As an open source project, we provide free support over Github. However, our daily job may increase response time to days or even weeks. If you need dedicated support, feel free to [contact us](mailto:info@novalab.io) for a quote.
 
 # Contributors
 

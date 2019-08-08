@@ -48,21 +48,24 @@ export default class ClusteredMapView extends PureComponent {
   }
 
   componentWillUpdate(nextProps, nextState) {
-    !this.isAndroid && this.props.animateClusters
-                    && this.clustersChanged(nextState)
-                    && LayoutAnimation.configureNext(LayoutAnimation.Presets.spring)
+    if (!this.isAndroid && this.props.animateClusters && this.clustersChanged(nextState))
+      LayoutAnimation.configureNext(this.props.layoutAnimationConf)
   }
 
-  mapRef = (ref) => {
+  mapRef(ref) {
     this.mapview = ref
   }
 
-  getMapRef = () => this.mapview
+  getMapRef() {
+    return this.mapview
+  }
 
-  getClusteringEngine = () => this.index
+  getClusteringEngine() {
+    return this.index
+  }
 
-  clusterize = (dataset) => {
-    this.index = SuperCluster({ // eslint-disable-line new-cap
+  clusterize(dataset) {
+    this.index = new SuperCluster({ // eslint-disable-line new-cap
       extent: this.props.extent,
       minZoom: this.props.minZoom,
       maxZoom: this.props.maxZoom,
@@ -70,7 +73,7 @@ export default class ClusteredMapView extends PureComponent {
     })
 
     // get formatted GeoPoints for cluster
-    const rawData = dataset.map(itemToGeoJSONFeature)
+    const rawData = dataset.map(item => itemToGeoJSONFeature(item, this.props.accessor))
 
     // load geopoints into SuperCluster
     this.index.load(rawData)
@@ -79,25 +82,25 @@ export default class ClusteredMapView extends PureComponent {
     this.setState({ data })
   }
 
-  clustersChanged = (nextState) => this.state.data.length !== nextState.data.length
-
-  onRegionChangeComplete = (region) => {
-    let data
-    if (region.longitudeDelta <= 80) {
-      data = this.getClusters(region)
-      this.setState({ region, data })
-    }
-    this.props.onRegionChangeComplete && this.props.onRegionChangeComplete(region, data)
+  clustersChanged(nextState) {
+    return this.state.data.length !== nextState.data.length
   }
 
-  getClusters = (region) => {
+  onRegionChangeComplete(region) {
+    let data = this.getClusters(region)
+    this.setState({ region, data }, () => {
+        this.props.onRegionChangeComplete && this.props.onRegionChangeComplete(region, data)
+    })
+  }
+
+  getClusters(region) {
     const bbox = regionToBoundingBox(region),
           viewport = (region.longitudeDelta) >= 40 ? { zoom: this.props.minZoom } : GeoViewport.viewport(bbox, this.dimensions)
 
     return this.index.getClusters(bbox, viewport.zoom)
   }
 
-  onClusterPress = (cluster) => {
+  onClusterPress(cluster) {
 
     // cluster press behavior might be extremely custom.
     if (!this.props.preserveClusterPressBehavior) {
@@ -119,9 +122,12 @@ export default class ClusteredMapView extends PureComponent {
   }
 
   render() {
+    const { style, ...props } = this.props
+
     return (
       <MapView
-        { ...this.props}
+        {...props}
+        style={style}
         ref={this.mapRef}
         onRegionChangeComplete={this.onRegionChangeComplete}>
         {
@@ -133,13 +139,8 @@ export default class ClusteredMapView extends PureComponent {
               <ClusterMarker
                 {...d}
                 onPress={this.onClusterPress}
-                textStyle={this.props.textStyle}
-                scaleUpRatio={this.props.scaleUpRatio}
                 renderCluster={this.props.renderCluster}
-                key={`cluster-${d.properties.cluster_id}`}
-                containerStyle={this.props.containerStyle}
-                clusterInitialFontSize={this.props.clusterInitialFontSize}
-                clusterInitialDimension={this.props.clusterInitialDimension} />
+                key={`cluster-${d.properties.cluster_id}`} />
             )
           })
         }
@@ -154,18 +155,16 @@ export default class ClusteredMapView extends PureComponent {
 
 ClusteredMapView.defaultProps = {
   minZoom: 1,
-  maxZoom: 20,
+  maxZoom: 16,
   extent: 512,
-  textStyle: {},
-  containerStyle: {},
+  accessor: 'location',
   animateClusters: true,
   clusteringEnabled: true,
-  clusterInitialFontSize: 12,
-  clusterInitialDimension: 30,
   clusterPressMaxChildren: 100,
   preserveClusterPressBehavior: true,
   width: Dimensions.get('window').width,
   height: Dimensions.get('window').height,
+  layoutAnimationConf: LayoutAnimation.Presets.spring,
   edgePadding: { top: 10, left: 10, right: 10, bottom: 10 }
 }
 
@@ -178,25 +177,23 @@ ClusteredMapView.propTypes = {
   extent: PropTypes.number.isRequired,
   minZoom: PropTypes.number.isRequired,
   maxZoom: PropTypes.number.isRequired,
-  clusterInitialFontSize: PropTypes.number.isRequired,
   clusterPressMaxChildren: PropTypes.number.isRequired,
-  clusterInitialDimension: PropTypes.number.isRequired,
   // array
   data: PropTypes.array.isRequired,
   // func
   onExplode: PropTypes.func,
   onImplode: PropTypes.func,
-  scaleUpRatio: PropTypes.func,
-  renderCluster: PropTypes.func,
   onClusterPress: PropTypes.func,
   renderMarker: PropTypes.func.isRequired,
+  renderCluster: PropTypes.func.isRequired,
   // bool
   animateClusters: PropTypes.bool.isRequired,
   clusteringEnabled: PropTypes.bool.isRequired,
   preserveClusterPressBehavior: PropTypes.bool.isRequired,
   // object
-  textStyle: PropTypes.object,
+  layoutAnimationConf: PropTypes.object,
   edgePadding: PropTypes.object.isRequired,
-  containerStyle: PropTypes.object,
   // string
+  // mutiple
+  accessor: PropTypes.oneOfType([PropTypes.string, PropTypes.func])
 }
