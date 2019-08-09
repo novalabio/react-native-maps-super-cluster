@@ -17,7 +17,8 @@ import ClusterMarker from './ClusterMarker'
 // libs / utils
 import {
   regionToBoundingBox,
-  itemToGeoJSONFeature
+  itemToGeoJSONFeature,
+  getCoordinatesFromItem,
 } from './util'
 
 export default class ClusteredMapView extends PureComponent {
@@ -112,11 +113,13 @@ export default class ClusteredMapView extends PureComponent {
     // NEW IMPLEMENTATION (with fitToCoordinates)
     // //////////////////////////////////////////////////////////////////////////////////
     // get cluster children
-    const children = this.index.getLeaves(cluster.properties.cluster_id, this.props.clusterPressMaxChildren),
-          markers = children.map(c => c.properties.item)
+    const children = this.index.getLeaves(cluster.properties.cluster_id, this.props.clusterPressMaxChildren)
+    const markers = children.map(c => c.properties.item)
+
+    const coordinates = markers.map(item => getCoordinatesFromItem(item, this.props.accessor, false))
 
     // fit right around them, considering edge padding
-    this.mapview.fitToCoordinates(markers.map(m => m.location), { edgePadding: this.props.edgePadding })
+    this.mapview.fitToCoordinates(coordinates, { edgePadding: this.props.edgePadding })
 
     this.props.onClusterPress && this.props.onClusterPress(cluster.properties.cluster_id, markers)
   }
