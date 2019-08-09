@@ -140,6 +140,8 @@ If you are using this module in a production application, please submit a PR or 
 * [Outside - Post and do tasks! on App Store](https://itunes.apple.com/us/app/outside-post-and-do-tasks/id1444603208?ls=1&mt=8)
 * [Luceverde - ACI Infomobilità on Google Play](https://play.google.com/store/apps/details?id=it.aci.luceverde.client.mobileapp)
 * [Luceverde - ACI Infomobilità on App Store](https://itunes.apple.com/it/app/luceverde/id1357722780?l=en&mt=8)
+* [Own The Spot on Google Play](https://play.google.com/store/apps/details?id=com.ownthespot)
+* [Own The Spot on App Store](https://itunes.apple.com/us/app/own-the-spot/id1403095767)
 
 ## TODO
 
