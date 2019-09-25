@@ -25,8 +25,9 @@ This module wants to provide a stable and performing solution for maps clusterin
 
 ```JSX
 import React, { Component } from 'react'
-import { Marker, Callout } from 'react-native-maps'
-import ClusteredMapView from 'react-native-maps-super-cluster'
+import MapView, { Marker, Callout } from 'react-native-maps'
+import ClusteredMapViewHOC from 'react-native-maps-super-cluster'
+const ClusteredMapView = ClusteredMapViewHOC(MapView);
 
 const INIT_REGION = {
   latitude: 41.8962667,
@@ -121,7 +122,7 @@ animateClusters | Bool | false | true | Animate imploding/exploding of clusters'
 layoutAnimationConf | LayoutAnimationConfig | false | `LayoutAnimation.Presets.spring` | Custom Layout animation configuration object for clusters animation during implode / explode **Works only on iOS**.
 clusteringEnabled | Bool | false | true | Dynamically set whether to pass through clustering functions or immediately render markers as a normal mapview.
 accessor | String\|Func | true | "location" | Accessor for item coordinate values. Could be a **string** (field name of an item object with latitude and longitude values) or a **function** (that describes how to access to coordinate data).
-
+onMapViewRef | Func | false | undefined | Give you the MapView reference. ref gives you ClusteredMapView reference but onMapViewRef will give you the reference of MapView. (Same use as ref prop)
 ## Methods
 **Name** | **Params** | **Description** | **Note**
 ---------|------------|-----------------|---------
