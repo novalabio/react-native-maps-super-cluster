@@ -56,8 +56,9 @@ export default function ClusteredMapViewHOC(MapView){
 
     mapRef(ref) {
       this.mapview = ref
+      this.props.onMapViewRef && this.props.onMapViewRef(ref);
     }
-    
+
     getMapRef() {
       return this.mapview
     }
@@ -176,6 +177,7 @@ export default function ClusteredMapViewHOC(MapView){
   ClusteredMapView.propTypes = {
     ...MapView.propTypes,
     // number
+    onMapViewRef: PropTypes.func,
     radius: PropTypes.number,
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
@@ -204,5 +206,6 @@ export default function ClusteredMapViewHOC(MapView){
   }
 
   return ClusteredMapView;
+
 }
 
