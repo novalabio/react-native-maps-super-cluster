@@ -43,14 +43,12 @@ export default class ClusteredMapView extends PureComponent {
     this.clusterize(this.props.data)
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.data !== nextProps.data)
-      this.clusterize(nextProps.data)
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    if (!this.isAndroid && this.props.animateClusters && this.clustersChanged(nextState))
+  componentDidUpdate(prevProps, prevState) {
+    if (!this.isAndroid && this.props.animateClusters && this.clustersChanged(prevState))
       LayoutAnimation.configureNext(this.props.layoutAnimationConf)
+
+    if (prevProps.data !== this.props.data)
+      this.clusterize(this.props.data)
   }
 
   mapRef(ref) {
