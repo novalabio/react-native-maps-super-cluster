@@ -1,23 +1,16 @@
-'use-strict'
-
 // base libs
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
-import {
-  Platform,
-  Dimensions,
-  LayoutAnimation
-} from 'react-native'
+import React, {PureComponent} from 'react'
+import {Dimensions, LayoutAnimation} from 'react-native'
 // map-related libs
 import MapView from 'react-native-maps'
-import SuperCluster from 'supercluster'
-import GeoViewport from '@mapbox/geo-viewport'
 // components / views
 import ClusterMarker from './ClusterMarker'
 // libs / utils
 import {
-  regionToBoundingBox,
-  itemToGeoJSONFeature,
+  IS_ANDROID,
+  createIndex,
+  computeClusters,
   getCoordinatesFromItem,
 } from './util'
 
@@ -26,35 +19,59 @@ export default class ClusteredMapView extends PureComponent {
   constructor(props) {
     super(props)
 
-    this.state = {
-      data: [], // helds renderable clusters and markers
-      region: props.region || props.initialRegion, // helds current map region
+    this.mapview = React.createRef()
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    const dataChanged = state.prevDataProps !== props.data
+
+    // `region` must be taken from `props` only at initial mount,
+    // only `state` matters afterward
+    const region = state.region ? state.region : props.region || props.initialRegion
+    
+    let index = state.index
+    let data = null
+
+    const {width, height, accessor, minZoom, maxZoom, extent, radius} = props
+
+    // we reuse `index` when only `region` change, whereas we reset it
+    // if underlying data has changed (i.e. data from `props`)
+    if (!index || dataChanged) {
+      index = createIndex(props.data, {
+        extent,
+        radius,
+        minZoom,
+        maxZoom,
+        width,
+        accessor,
+      })
     }
 
-    this.isAndroid = Platform.OS === 'android'
-    this.dimensions = [props.width, props.height]
+    data = computeClusters(index, region, {width,  height}, {minZoom})
 
-    this.mapRef = this.mapRef.bind(this)
-    this.onClusterPress = this.onClusterPress.bind(this)
-    this.onRegionChangeComplete = this.onRegionChangeComplete.bind(this)
+    return {
+      prevRegion: region,
+      prevDataProps: props.data,
+      index,
+      data,
+      region,
+    };
   }
 
-  componentDidMount() {
-    this.clusterize(this.props.data)
-  }
+  getSnapshotBeforeUpdate(prevProps, prevState) {
+    const clustersChanged = prevState.data.length !== this.state.data.length
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.data !== nextProps.data)
-      this.clusterize(nextProps.data)
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    if (!this.isAndroid && this.props.animateClusters && this.clustersChanged(nextState))
+    if (!IS_ANDROID && this.props.animateClusters && clustersChanged) {
       LayoutAnimation.configureNext(this.props.layoutAnimationConf)
+    }
+
+    return null;
   }
 
-  mapRef(ref) {
-    this.mapview = ref
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.region !== this.state.region && this.props.onRegionChangeComplete) {
+      this.props.onRegionChangeComplete(this.state.region, this.state.data)
+    }
   }
 
   getMapRef() {
@@ -62,46 +79,14 @@ export default class ClusteredMapView extends PureComponent {
   }
 
   getClusteringEngine() {
-    return this.index
+    return this.state.index
   }
 
-  clusterize(dataset) {
-    this.index = new SuperCluster({ // eslint-disable-line new-cap
-      extent: this.props.extent,
-      minZoom: this.props.minZoom,
-      maxZoom: this.props.maxZoom,
-      radius: this.props.radius || (this.dimensions[0] * .045), // 4.5% of screen width
-    })
-
-    // get formatted GeoPoints for cluster
-    const rawData = dataset.map(item => itemToGeoJSONFeature(item, this.props.accessor))
-
-    // load geopoints into SuperCluster
-    this.index.load(rawData)
-
-    const data = this.getClusters(this.state.region)
-    this.setState({ data })
+  onRegionChangeComplete = (region) => {
+    this.setState({ region })
   }
 
-  clustersChanged(nextState) {
-    return this.state.data.length !== nextState.data.length
-  }
-
-  onRegionChangeComplete(region) {
-    let data = this.getClusters(region)
-    this.setState({ region, data }, () => {
-        this.props.onRegionChangeComplete && this.props.onRegionChangeComplete(region, data)
-    })
-  }
-
-  getClusters(region) {
-    const bbox = regionToBoundingBox(region),
-          viewport = (region.longitudeDelta) >= 40 ? { zoom: this.props.minZoom } : GeoViewport.viewport(bbox, this.dimensions)
-
-    return this.index.getClusters(bbox, viewport.zoom)
-  }
-
-  onClusterPress(cluster) {
+  onClusterPress = (cluster) => {
 
     // cluster press behavior might be extremely custom.
     if (!this.props.preserveClusterPressBehavior) {
@@ -113,13 +98,15 @@ export default class ClusteredMapView extends PureComponent {
     // NEW IMPLEMENTATION (with fitToCoordinates)
     // //////////////////////////////////////////////////////////////////////////////////
     // get cluster children
-    const children = this.index.getLeaves(cluster.properties.cluster_id, this.props.clusterPressMaxChildren)
+    const children = this.state.index.getLeaves(cluster.properties.cluster_id, this.props.clusterPressMaxChildren)
     const markers = children.map(c => c.properties.item)
 
     const coordinates = markers.map(item => getCoordinatesFromItem(item, this.props.accessor, false))
 
     // fit right around them, considering edge padding
-    this.mapview.fitToCoordinates(coordinates, { edgePadding: this.props.edgePadding })
+    if (this.mapview.current) {
+      this.mapview.current.fitToCoordinates(coordinates, { edgePadding: this.props.edgePadding })
+    }
 
     this.props.onClusterPress && this.props.onClusterPress(cluster.properties.cluster_id, markers)
   }
@@ -131,7 +118,7 @@ export default class ClusteredMapView extends PureComponent {
       <MapView
         {...props}
         style={style}
-        ref={this.mapRef}
+        ref={this.mapview}
         onRegionChangeComplete={this.onRegionChangeComplete}>
         {
           this.props.clusteringEnabled && this.state.data.map((d) => {

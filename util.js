@@ -1,4 +1,59 @@
-'use-strict'
+import {Platform} from 'react-native'
+import SuperCluster from 'supercluster'
+import GeoViewport from '@mapbox/geo-viewport'
+
+export const IS_ANDROID = Platform.OS === 'android'
+
+/**
+ * Compute clusters and return clustered data.
+ * 
+ * @param {Object} index Supercluster instance
+ * @param {Object} region map's region
+ * @param {Object} size map's size
+ * @param {Object} config
+ * @returns {Array} clustered data 
+ */
+export const computeClusters = (index, region, {width, height}, {minZoom}) => {
+  const bbox = regionToBoundingBox(region)
+  
+  const size = toGeoViewportFormat(width, height)
+  const viewport = (region.longitudeDelta) >= 40 ? { zoom: minZoom } : GeoViewport.viewport(bbox, size)
+
+  return index.getClusters(bbox, viewport.zoom)
+}
+
+/**
+ * Load given dataset into a newly created
+ * Supercluster instance
+ * 
+ * @param {Array} dataset data to clusterize
+ * @param {Object} region map's region
+ * @param {Object} config various config
+ * @returns {Object} Supercluster instace
+ */
+export const createIndex = (dataset, {extent, radius, minZoom, maxZoom, width, accessor}) => {
+  const index = new SuperCluster({ // eslint-disable-line new-cap
+    extent,
+    minZoom,
+    maxZoom,
+    radius: radius || (width * .045), // 4.5% of screen width
+  })
+
+  // get formatted GeoPoints for cluster
+  const rawData = dataset.map(item => itemToGeoJSONFeature(item, accessor))
+
+  // load geopoints into SuperCluster
+  index.load(rawData)
+
+  return index;
+}
+
+/**
+ * Format width and height for `GeoViewport`
+ */
+export const toGeoViewportFormat = (width, height) => {
+  return [width, height];
+};
 
 /**
  * Compute bounding box for the given region
