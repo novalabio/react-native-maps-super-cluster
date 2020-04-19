@@ -1,35 +1,27 @@
-'use-strict'
-
 // base libs
-import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React from 'react';
+import PropTypes from 'prop-types';
 
-export default class ClusterMarker extends Component {
-  constructor(props) {
-    super(props)
-
-    this.onPress = this.onPress.bind(this)
-  }
-
-  onPress() {
-    this.props.onPress(this.props)
-  }
+export default class ClusterMarker extends React.PureComponent {
+  onPress = () => {
+    this.props.onPress(this.props);
+  };
 
   render() {
-    const pointCount = this.props.properties.point_count // eslint-disable-line camelcase
-    const latitude = this.props.geometry.coordinates[1],
-          longitude = this.props.geometry.coordinates[0]
+    const pointCount = this.props.properties.point_count; // eslint-disable-line camelcase
+    const latitude = this.props.geometry.coordinates[1];
+    const longitude = this.props.geometry.coordinates[0];
 
     if (this.props.renderCluster) {
       const cluster = {
         pointCount,
-        coordinate: { latitude, longitude },
+        coordinate: {latitude, longitude},
         clusterId: this.props.properties.cluster_id,
-      }
-      return this.props.renderCluster(cluster, this.onPress)
+      };
+      return this.props.renderCluster(cluster, this.onPress);
     }
 
-    throw "Implement renderCluster method prop to render correctly cluster marker!"
+    throw 'Implement renderCluster method prop to render correctly cluster marker!';
   }
 }
 
@@ -38,4 +30,4 @@ ClusterMarker.propTypes = {
   onPress: PropTypes.func.isRequired,
   geometry: PropTypes.object.isRequired,
   properties: PropTypes.object.isRequired,
-}
+};
