@@ -43,7 +43,7 @@ export const createIndex = (
     extent,
     minZoom,
     maxZoom,
-    radius: radius || width * 0.045, // 4.5% of screen width
+    radius: radius || Math.round(width * 0.045), // 4.5% of screen width
   });
 
   // get formatted GeoPoints for cluster

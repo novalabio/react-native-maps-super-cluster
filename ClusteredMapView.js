@@ -18,19 +18,28 @@ export default class ClusteredMapView extends PureComponent {
   constructor(props) {
     super(props);
 
+    this.state = {
+      prevRegion: null,
+      prevDataProps: [],
+      region: null,
+      data: [],
+      index: null,
+    };
+
     this.mapview = React.createRef();
   }
 
   static getDerivedStateFromProps(props, state) {
-    const dataChanged = state.prevDataProps !== props.data;
+    const isFirstPass = state.region === null;
+    const dataChanged = isFirstPass || state.prevDataProps !== props.data;
 
     // `region` must be taken from `props` only at initial mount,
     // only `state` matters afterward
-    const region = state.region
-      ? state.region
-      : props.region || props.initialRegion;
+    const region = isFirstPass
+      ? props.region || props.initialRegion
+      : state.region;
 
-    let index = state.index;
+    let index = isFirstPass ? null : state.index;
     let data = null;
 
     const {width, height, accessor, minZoom, maxZoom, extent, radius} = props;
