@@ -19,6 +19,7 @@ import {
   regionToBoundingBox,
   itemToGeoJSONFeature,
   getCoordinatesFromItem,
+  getMarkersRegion
 } from './util'
 
 export default class ClusteredMapView extends PureComponent {
@@ -119,10 +120,18 @@ export default class ClusteredMapView extends PureComponent {
     const coordinates = markers.map(item => getCoordinatesFromItem(item, this.props.accessor, false))
 
     // fit right around them, considering edge padding
-    this.mapview.fitToCoordinates(coordinates, { edgePadding: this.props.edgePadding })
-
+    
+    if(Platform.OS=="android"){
+     
+      this.mapview.animateToRegion( getMarkersRegion(coordinates), 500);
+    }
+    else
+    this.mapview.fitToCoordinates(coordinates, { edgePadding: this.props.edgePadding,animated:true });
+    
     this.props.onClusterPress && this.props.onClusterPress(cluster.properties.cluster_id, markers)
   }
+
+
 
   render() {
     const { style, ...props } = this.props

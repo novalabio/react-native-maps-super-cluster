@@ -1,5 +1,5 @@
 'use-strict'
-
+export const INCREASE_RATE = 2;
 /**
  * Compute bounding box for the given region
  * @param {Object} region - Google Maps/MapKit region
@@ -32,22 +32,22 @@ export const regionToBoundingBox = (region) => {
  */
 export const boundingBoxToRegion = (bbox) => {
   const minLon = bbox.ws.longitude * Math.PI / 180,
-        maxLon = bbox.en.longitude * Math.PI / 180
+    maxLon = bbox.en.longitude * Math.PI / 180
 
   const minLat = bbox.ws.latitude * Math.PI / 180,
-        maxLat = bbox.en.latitude * Math.PI / 180
+    maxLat = bbox.en.latitude * Math.PI / 180
 
   const dLon = maxLon - minLon,
-        dLat = maxLat - minLat
+    dLat = maxLat - minLat
 
   const x = Math.cos(maxLat) * Math.cos(dLon),
-        y = Math.cos(maxLat) * Math.sin(dLon)
+    y = Math.cos(maxLat) * Math.sin(dLon)
 
   const latRad = Math.atan2(Math.sin(minLat) + Math.sin(maxLat), Math.sqrt((Math.cos(minLat) + x) * (Math.cos(minLat) + x) + y * y)),
-        lonRad = minLon + Math.atan2(y, Math.cos(minLat) + x)
+    lonRad = minLon + Math.atan2(y, Math.cos(minLat) + x)
 
   const latitude = latRad * 180 / Math.PI,
-        longitude = lonRad * 180 / Math.PI
+    longitude = lonRad * 180 / Math.PI
 
   return {
     latitude,
@@ -96,3 +96,42 @@ export const itemToGeoJSONFeature = (item, accessor) => {
     properties: { point_count: 0, item } // eslint-disable-line camelcase
   }
 }
+export const calculateDelta = (x, y) =>
+  x > y ? x - y : y - x;
+
+export const calculateAverage = (...args) => {
+  const argList = [...args];
+  if (!argList.length) {
+    return 0;
+  }
+
+  return argList.reduce((sum, num) => sum + num, 0) / argList.length;
+};
+export const getMarkersRegion = (points) => {
+  const coordinates = {
+    minX: points[0].latitude,
+    maxX: points[0].latitude,
+    maxY: points[0].longitude,
+    minY: points[0].longitude,
+  };
+
+  const { maxX, minX, maxY, minY } = points.reduce(
+    (acc, point) => ({
+      minX: Math.min(acc.minX, point.latitude),
+      maxX: Math.max(acc.maxX, point.latitude),
+      minY: Math.min(acc.minY, point.longitude),
+      maxY: Math.max(acc.maxY, point.longitude),
+    }),
+    { ...coordinates }
+  );
+
+  const deltaX = calculateDelta(maxX, minX);
+  const deltaY = calculateDelta(maxY, minY);
+
+  return {
+    latitude: calculateAverage(minX, maxX),
+    longitude: calculateAverage(minY, maxY),
+    latitudeDelta: deltaX * INCREASE_RATE,
+    longitudeDelta: deltaY * INCREASE_RATE,
+  };
+};
