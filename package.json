@@ -32,11 +32,26 @@
   },
   "homepage": "https://github.com/novalabio/react-native-maps-super-cluster#readme",
   "dependencies": {
-    "@mapbox/geo-viewport": "^0.4.0",
-    "supercluster": "^6.0.2"
+    "@mapbox/geo-viewport": "^0.5.0",
+    "supercluster": "^7.1.4"
   },
   "peerDependencies": {
-    "prop-types": "15.7.2",
-    "react-native-maps": "^0.25.0"
+    "prop-types": "~15.7.2",
+    "react-native": "*",
+    "react-native-hms-map": "*",
+    "react-native-maps": "~0.25.0"
+  },
+  "peerDependenciesMeta": {
+    "react-native-maps": {
+      "optional": true
+    },
+    "react-native-hms-map": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.5.1"
   }
 }
