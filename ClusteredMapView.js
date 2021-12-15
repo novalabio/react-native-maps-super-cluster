@@ -1,9 +1,7 @@
 // base libs
+import React from 'react';
 import PropTypes from 'prop-types';
-import React, {PureComponent} from 'react';
-import {Dimensions, LayoutAnimation} from 'react-native';
-// map-related libs
-import MapView from 'react-native-maps';
+import { Dimensions, LayoutAnimation } from 'react-native';
 // components / views
 import ClusterMarker from './ClusterMarker';
 // libs / utils
@@ -13,27 +11,30 @@ import {
   computeClusters,
   getCoordinatesFromItem,
 } from './util';
+////////////////////////////////////////////////////////////
+// This is to support Huawei Mobile Services Map
+let MapView = null;
+try {
+  MapView = require('react-native-maps').default;
+} catch (e) {
+  MapView = require('react-native-hms-map').default;
+}
+////////////////////////////////////////////////////////////
 
-export default class ClusteredMapView extends PureComponent {
-  constructor(props) {
-    super(props);
-
-    this.mapview = React.createRef();
-  }
-
+export default class ClusteredMapView extends React.PureComponent {
   static getDerivedStateFromProps(props, state) {
-    const dataChanged = state.prevDataProps !== props.data;
+    const dataChanged = state?.prevDataProps !== props.data;
 
     // `region` must be taken from `props` only at initial mount,
     // only `state` matters afterward
-    const region = state.region
+    const region = state?.region
       ? state.region
       : props.region || props.initialRegion;
 
-    let index = state.index;
+    let index = state?.index;
     let data = null;
 
-    const {width, height, accessor, minZoom, maxZoom, extent, radius} = props;
+    const { width, height, accessor, minZoom, maxZoom, extent, radius } = props;
 
     // we reuse `index` when only `region` change, whereas we reset it
     // if underlying data has changed (i.e. data from `props`)
@@ -48,7 +49,7 @@ export default class ClusteredMapView extends PureComponent {
       });
     }
 
-    data = computeClusters(index, region, {width, height}, {minZoom});
+    data = computeClusters(index, region, { width, height }, { minZoom });
 
     return {
       prevRegion: region,
@@ -57,6 +58,12 @@ export default class ClusteredMapView extends PureComponent {
       data,
       region,
     };
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.mapview = React.createRef();
   }
 
   getSnapshotBeforeUpdate(prevProps, prevState) {
@@ -86,15 +93,14 @@ export default class ClusteredMapView extends PureComponent {
     return this.state.index;
   }
 
-  onRegionChangeComplete = (region) => {
-    this.setState({region});
+  onRegionChangeComplete = region => {
+    this.setState({ region });
   };
 
-  onClusterPress = (cluster) => {
+  onClusterPress = cluster => {
     // cluster press behavior might be extremely custom.
     if (!this.props.preserveClusterPressBehavior) {
-      this.props.onClusterPress &&
-        this.props.onClusterPress(cluster.properties.cluster_id);
+      this._safeOnClusterPressProp(cluster.properties.cluster_id);
       return;
     }
 
@@ -106,9 +112,9 @@ export default class ClusteredMapView extends PureComponent {
       cluster.properties.cluster_id,
       this.props.clusterPressMaxChildren,
     );
-    const markers = children.map((c) => c.properties.item);
+    const markers = children.map(c => c.properties.item);
 
-    const coordinates = markers.map((item) =>
+    const coordinates = markers.map(item =>
       getCoordinatesFromItem(item, this.props.accessor, false),
     );
 
@@ -119,12 +125,11 @@ export default class ClusteredMapView extends PureComponent {
       });
     }
 
-    this.props.onClusterPress &&
-      this.props.onClusterPress(cluster.properties.cluster_id, markers);
+    this._safeOnClusterPressProp(cluster.properties.cluster_id, markers);
   };
 
   render() {
-    const {style, ...props} = this.props;
+    const { style, ...props } = this.props;
 
     return (
       <MapView
@@ -133,10 +138,10 @@ export default class ClusteredMapView extends PureComponent {
         ref={this.mapview}
         onRegionChangeComplete={this.onRegionChangeComplete}>
         {this.props.clusteringEnabled &&
-          this.state.data.map((d) => {
-            if (d.properties.point_count === 0)
+          this.state.data.map(d => {
+            if (d.properties.point_count === 0) {
               return this.props.renderMarker(d.properties.item);
-
+            }
             return (
               <ClusterMarker
                 {...d}
@@ -147,11 +152,17 @@ export default class ClusteredMapView extends PureComponent {
             );
           })}
         {!this.props.clusteringEnabled &&
-          this.props.data.map((d) => this.props.renderMarker(d))}
+          this.props.data.map(d => this.props.renderMarker(d))}
         {this.props.children}
       </MapView>
     );
   }
+
+  _safeOnClusterPressProp = (clusterId, markers) => {
+    if (typeof this.props.onClusterPress === 'function') {
+      this.props.onClusterPress(clusterId, markers);
+    }
+  };
 }
 
 ClusteredMapView.defaultProps = {
@@ -166,7 +177,7 @@ ClusteredMapView.defaultProps = {
   width: Dimensions.get('window').width,
   height: Dimensions.get('window').height,
   layoutAnimationConf: LayoutAnimation.Presets.spring,
-  edgePadding: {top: 10, left: 10, right: 10, bottom: 10},
+  edgePadding: { top: 10, left: 10, right: 10, bottom: 10 },
 };
 
 ClusteredMapView.propTypes = {

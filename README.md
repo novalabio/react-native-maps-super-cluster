@@ -151,7 +151,7 @@ If you are using this module in a production application, please submit a PR or 
 * trigger events on cluster implode/explode
 
 # Support
-As an open source project, we provide free support over Github. However, our daily job may increase response time to days or even weeks. If you need dedicated support, feel free to [contact us](mailto:info@novalab.io) for a quote.
+As an open source project, we provide free support over Github. However, our daily job may increase response time to days or even weeks. If you need dedicated support, feel free to [contact us](mailto:info@novalab.io).
 
 # Contributors
 
