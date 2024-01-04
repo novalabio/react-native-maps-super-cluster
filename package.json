@@ -37,6 +37,6 @@
   },
   "peerDependencies": {
     "prop-types": "15.7.2",
-    "react-native-maps": "^0.25.0"
+    "react-native-maps": "^1.8.0"
   }
 }
